@@ -1,4 +1,4 @@
-# 🎬 Movie Ticket Booking Application
+# 🎬 MJCINEMA : Movie Ticket Booking Application
 
 **Author:** Mark Jenel Cortas
 
