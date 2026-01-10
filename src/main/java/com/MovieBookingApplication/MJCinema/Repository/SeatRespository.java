@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface SeatRespository extends JpaRepository<Seat, Integer> {
 
-    Optional <Seat> findBySeatNumber(String seatNumber);
+    Optional <Seat> findBySeatNumberAndCinemaCinemaId(String seatNumber, Integer cinemaId);
 
     @Query("SELECT s FROM Seat s WHERE s.cinema.cinemaId = " +
             "(SELECT sch.cinema.cinemaId FROM Schedule sch WHERE sch.scheduleId= :scheduleId)")

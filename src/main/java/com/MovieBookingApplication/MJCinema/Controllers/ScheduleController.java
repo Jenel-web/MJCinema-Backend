@@ -1,16 +1,12 @@
 package com.MovieBookingApplication.MJCinema.Controllers;
 
-import com.MovieBookingApplication.MJCinema.DTO.ShowAvailableRequest;
-import com.MovieBookingApplication.MJCinema.DTO.ShowAvailableSeatsResponse;
-import com.MovieBookingApplication.MJCinema.DTO.ShowingSchedResponse;
+import com.MovieBookingApplication.MJCinema.DTO.*;
 import com.MovieBookingApplication.MJCinema.Services.ScheduleService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -26,9 +22,32 @@ public class ScheduleController {
     public List<ShowingSchedResponse> nowShowing(){
         return scheduleService.nowShowing();
     }
+
     @GetMapping("/seats")
-    public ResponseEntity <Map<String, List<ShowAvailableSeatsResponse>>> showAvailableSeats(@RequestBody ShowAvailableRequest request){
-        Map<String, List<ShowAvailableSeatsResponse>> map = scheduleService.showAvailableSeats(request.getScheduleId());
+    public ResponseEntity <Map<String, List<ShowAvailableSeatsResponse>>> showAvailableSeats(@RequestParam ("id") Integer scheduleId){
+        Map<String, List<ShowAvailableSeatsResponse>> map = scheduleService.showAvailableSeats(scheduleId);
          return ResponseEntity.ok(map);
     }
+
+    @GetMapping("/coming-soon")
+    public List<MovieDetailsDTO> comingSoon(){
+        return scheduleService.comingSoon();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/add")
+    public ResponseEntity<String> addSchedule(@Valid @RequestBody AddScheduleRequest request){
+        String response = scheduleService.addSchedule(request);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/cancel/{id}") //working already.
+    public ResponseEntity<String> cancelSchedule(@Valid @PathVariable ("id") Integer scheduleId){
+       String result = scheduleService.removeSchedule(scheduleId);
+        return ResponseEntity.ok(result);
+    }
+
+
 }

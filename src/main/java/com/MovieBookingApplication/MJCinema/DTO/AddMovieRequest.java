@@ -1,6 +1,7 @@
 package com.MovieBookingApplication.MJCinema.DTO;
 
 public class AddMovieRequest {
+
     private Long id;//variable names should be small letters
 
     public Long getId() {

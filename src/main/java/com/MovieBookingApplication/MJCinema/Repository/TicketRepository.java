@@ -39,4 +39,7 @@ public interface TicketRepository extends JpaRepository<Tickets, Integer> {
     @Query("SELECT t from Tickets t WHERE t.ticketCode = :ticketCode")
     Optional<Tickets> findByTicketCode(String ticketCode);
 
+    List<Tickets> findByScheduleScheduleId(Integer scheduleId);
+
+
 }

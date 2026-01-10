@@ -1,5 +1,6 @@
 package com.MovieBookingApplication.MJCinema.Services;
 
+import com.MovieBookingApplication.MJCinema.DTO.MovieDetailsDTO;
 import com.MovieBookingApplication.MJCinema.DTO.TmdbMovieDTO;
 import com.MovieBookingApplication.MJCinema.DTO.TmdbMovieResponse;
 import com.MovieBookingApplication.MJCinema.Entity.Movie;
@@ -45,5 +46,9 @@ public class MovieService {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public List<MovieDetailsDTO> showMovies(){
+        return movieRepository.findAllMovies();
     }
 }

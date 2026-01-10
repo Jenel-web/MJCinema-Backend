@@ -1,13 +1,14 @@
 package com.MovieBookingApplication.MJCinema.Controllers;
 
 import com.MovieBookingApplication.MJCinema.DTO.AddMovieRequest;
-import com.MovieBookingApplication.MJCinema.Entity.Movie;
+import com.MovieBookingApplication.MJCinema.DTO.MovieDetailsDTO;
 import com.MovieBookingApplication.MJCinema.Services.MovieService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-@PreAuthorize("hasRole('ADMIN')")
+import java.util.List;
+
 @RestController
 @RequestMapping("/movie")
 public class MovieController {
@@ -17,6 +18,7 @@ public class MovieController {
         this.movieService = movieService;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/add")
     public ResponseEntity<String> addMovie (@RequestBody AddMovieRequest request){
         if (request.getId() == null) {
@@ -29,5 +31,12 @@ public class MovieController {
             return ResponseEntity.badRequest().body("Movie not saved.");
             //in case it's a bad request.
         }
+    }
+
+    @GetMapping("/show")
+    public ResponseEntity<List<MovieDetailsDTO>> showMovies(){
+        List<MovieDetailsDTO> movieList = movieService.showMovies();
+
+        return ResponseEntity.ok(movieList);
     }
 }

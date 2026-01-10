@@ -1,5 +1,6 @@
 package com.MovieBookingApplication.MJCinema.Services;
 
+import com.MovieBookingApplication.MJCinema.DTO.ChangePasswordRequest;
 import com.MovieBookingApplication.MJCinema.DTO.MovieTicketsDTO;
 import com.MovieBookingApplication.MJCinema.Entity.Users;
 import com.MovieBookingApplication.MJCinema.Repository.TicketRepository;
@@ -35,6 +36,29 @@ public class UserService {
 
     public List<MovieTicketsDTO> showTickets(String username){
         return ticketRepository.FindTicketsByUserUsername(username);
+    }
+
+    public String changePassword(ChangePasswordRequest request, String username){
+
+        Users user  = userRepository.findByUsername(username).
+                orElseThrow(() -> new RuntimeException("User not found."));
+
+        if(checkPassword(request.getOldPassword(), username)){
+            user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+            userRepository.save(user);
+        }
+        else{
+            return "Password incorrect";
+        }
+        return "Password Changed Successfully";
+    }
+
+    public boolean checkPassword(String password, String username){
+
+        Users user  = userRepository.findByUsername(username).
+                orElseThrow(() -> new RuntimeException("User not found."));
+
+        return passwordEncoder.matches(password, user.getPassword());
     }
 
 }

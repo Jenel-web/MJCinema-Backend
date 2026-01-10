@@ -1,5 +1,6 @@
 package com.MovieBookingApplication.MJCinema.Controllers;
 
+import com.MovieBookingApplication.MJCinema.DTO.ChangePasswordRequest;
 import com.MovieBookingApplication.MJCinema.DTO.MovieTicketsDTO;
 import com.MovieBookingApplication.MJCinema.DTO.UserDTO;
 import com.MovieBookingApplication.MJCinema.Services.UserService;
@@ -42,4 +43,10 @@ public class UserController {
         return ResponseEntity.ok(userTickets);
     }
 
+    @PatchMapping("/change/password")
+    public ResponseEntity<String> changePassword (@RequestBody ChangePasswordRequest request,
+                                                  Authentication auth){
+        String result = userService.changePassword(request, currentUser(auth));
+        return ResponseEntity.ok(result);
+    }
 }

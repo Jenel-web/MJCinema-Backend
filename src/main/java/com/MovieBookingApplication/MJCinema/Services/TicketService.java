@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -46,7 +47,9 @@ public class TicketService {
         // 2. validate schedule
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new RuntimeException("Schedule not found"));
         // 3. validate seat
-        Seat seatNumber = seatRespository.findBySeatNumber(seat).orElseThrow(() -> new RuntimeException("Seat not found."));
+        Cinema cinema = schedule.getCinema();
+        Seat seatNumber = seatRespository.findBySeatNumberAndCinemaCinemaId(
+                seat, cinema.getCinemaId()).orElseThrow(() -> new RuntimeException("Seat not found."));
         // this creates a seat object that is found using the function.
         // 4. check availability
         boolean isTaken = ticketRepository.existsByScheduleScheduleIdAndSeatSeatNumber(scheduleId, seat);
@@ -116,12 +119,12 @@ public class TicketService {
 
 
         if(!ticket.getUser().getUsername().equals(username)){
-            return "Ticket Cancellation Failed.";
+            throw new RuntimeException("Ticket Cancellation Failed.");
         }
 
         //delete ticket
-        ticketRepository.delete(ticket);
-
+       ticket.setTicketStatus(TicketStatus.CANCELLED);
+        ticketRepository.save(ticket);
         //add the ticket price to balance
         Double balance = user.getBalance();
         SeatPrice seatPrice = seatPriceRepository.findBySeatCategoryAndScheduleScheduleId(ticket.getSeat().getSeatCategory(),

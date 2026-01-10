@@ -36,14 +36,13 @@ public class TicketsController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/show")
-    public ResponseEntity<List<MovieTicketsDTO>> showMovieTickets(@RequestBody ShowMovieRequest request){
-        Integer movieId = request.getMovieId();
+    public ResponseEntity<List<MovieTicketsDTO>> showMovieTickets(@RequestParam ("id") Integer movieId){
         List<MovieTicketsDTO> tickets =  ticketService.showMovieTickets(movieId);
 
         return ResponseEntity.ok(tickets);
     }
 
-    @DeleteMapping("/cancel")
+    @PatchMapping("/cancel")
     public ResponseEntity<String> cancelTicket(@RequestBody CancelTicketRequest request, Authentication auth){
         String message = ticketService.cancelTicket(request.getTicketCode(), currentUser(auth));
 

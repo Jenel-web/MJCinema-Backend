@@ -1,5 +1,6 @@
 package com.MovieBookingApplication.MJCinema.Entity;
 
+import com.MovieBookingApplication.MJCinema.DTO.ScheduleSlot;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -25,6 +26,30 @@ public class Schedule {
     private LocalTime startTime;
     @Column(name = "end_time", nullable = false)
     private LocalTime endTime;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "slot",nullable = false)
+    private ScheduleSlot slot;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status",nullable = true)
+    private ScheduleStatus status;
+
+    public ScheduleStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ScheduleStatus status) {
+        this.status = status;
+    }
+
+    public ScheduleSlot getSlot() {
+        return slot;
+    }
+
+    public void setSlot(ScheduleSlot slot) {
+        this.slot = slot;
+    }
 
     public Integer getScheduleId() {
         return scheduleId;

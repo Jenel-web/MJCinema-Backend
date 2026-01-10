@@ -36,6 +36,17 @@ public class Tickets {
     @Column(name = "booked_time", nullable = false)
     private LocalDateTime bookedTime;
 
+    @Column(name = "ticket_status", nullable = true)
+    public TicketStatus ticketStatus;
+
+    public TicketStatus getTicketStatus() {
+        return ticketStatus;
+    }
+
+    public void setTicketStatus(TicketStatus ticketStatus) {
+        this.ticketStatus = ticketStatus;
+    }
+
     public Integer getTicketId() {
         return ticketId;
     }

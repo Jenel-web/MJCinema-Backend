@@ -1,12 +1,20 @@
 package com.MovieBookingApplication.MJCinema.Repository;
 
+import com.MovieBookingApplication.MJCinema.DTO.MovieDetailsDTO;
+import com.MovieBookingApplication.MJCinema.DTO.MovieTicketsDTO;
 import com.MovieBookingApplication.MJCinema.Entity.Movie;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 
 @Repository
 public interface MovieRepository extends JpaRepository<Movie, Integer> {
 
     boolean existsByTmdbId(Long tmdbId);
+
+    @Query("SELECT new com.MovieBookingApplication.MJCinema.DTO.MovieDetailsDTO(m.poster, m.title, m.rating, m.overview, m.releaseDate) FROM Movie m")
+    List<MovieDetailsDTO> findAllMovies();
 }

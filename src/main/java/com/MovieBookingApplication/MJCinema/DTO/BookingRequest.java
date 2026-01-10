@@ -1,7 +1,11 @@
 package com.MovieBookingApplication.MJCinema.DTO;
 
+import jakarta.validation.constraints.NotNull;
+
 public class BookingRequest {
+    @NotNull(message = "Schedule Id is required.")
     private Integer scheduleId;
+    @NotNull(message = "Seat Number is required.")
     private String seat;
 
     public Integer getScheduleId() {

@@ -2,9 +2,10 @@ package com.MovieBookingApplication.MJCinema.DTO;
 
 import jakarta.validation.constraints.NotNull;
 
-public class ShowAvailableRequest {
-    @NotNull(message = "Schedule Id is required.")
-    private Integer scheduleId;
+public class AddSeatPriceRequest {
+    @NotNull(message = "Schedule Id required.")
+    public Integer scheduleId;
+
 
     public Integer getScheduleId() {
         return scheduleId;
