@@ -5,11 +5,15 @@ import com.MovieBookingApplication.MJCinema.DTO.MovieTicketsDTO;
 import com.MovieBookingApplication.MJCinema.Entity.Users;
 import com.MovieBookingApplication.MJCinema.Repository.TicketRepository;
 import com.MovieBookingApplication.MJCinema.Repository.UserRepository;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+
+
 
 @Service
 public class UserService {
@@ -26,12 +30,29 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public Users registerUser(String username, String password){
-        Users u = new Users();
-        u.setUsername(username);
-        u.setPassword(passwordEncoder.encode(password));
-        u.setRole("USER");
-        return userRepository.save(u);
+    public boolean registerUser(String username, String password, String confirm){
+        boolean isUsernameUsed = userRepository.existsByUsername(username);
+
+        if(isUsernameUsed){
+            return false;
+        }
+        else{
+            Users u = new Users();
+            u.setUsername(username);
+            u.setPassword(passwordEncoder.encode(password));
+            u.setRole("USER");
+            userRepository.save(u);
+            return true;
+        }
+    }
+
+    public boolean loginUser(String username, String password){
+        //find in repo
+        return userRepository.findByUsername(username)
+                .map( user -> passwordEncoder.matches(password, user.getPassword()))
+                .orElse(false);
+
+        //return true or false
     }
 
     public List<MovieTicketsDTO> showTickets(String username){

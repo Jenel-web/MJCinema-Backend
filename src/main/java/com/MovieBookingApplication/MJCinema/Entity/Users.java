@@ -17,6 +17,7 @@ public class Users implements UserDetails {
     @Column(name = "user_id")
     private Integer userId;
     private String password;
+    @Column(nullable = false, unique = true)
     private String username;
     private String role;
     private Double balance = 1000.00;
