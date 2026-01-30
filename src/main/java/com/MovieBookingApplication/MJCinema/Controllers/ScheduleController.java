@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping ("/schedule")
 public class ScheduleController {
@@ -19,7 +20,7 @@ public class ScheduleController {
     private ScheduleService scheduleService;
 
     @GetMapping("/now-showing")
-    public List<ShowingSchedResponse> nowShowing(){
+    public List<MovieDetailsDTO> nowShowing(){
         return scheduleService.nowShowing();
     }
 
@@ -30,7 +31,7 @@ public class ScheduleController {
     }
 
     @GetMapping("/coming-soon")
-    public List<MovieDetailsDTO> comingSoon(){
+    public List<ComingSoonResponse> comingSoon(){
         return scheduleService.comingSoon();
     }
 

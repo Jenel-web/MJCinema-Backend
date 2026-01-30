@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static com.fasterxml.jackson.databind.type.LogicalType.Map;
@@ -37,32 +38,85 @@ public class    ScheduleService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<ShowingSchedResponse> nowShowing(){
-         return scheduleRepository.FindNowShowingSchedules();
+    public List<ShowingSchedResponse> owShowing() {
+        return scheduleRepository.FindNowShowingSchedules();
     }
 
-    public List<MovieDetailsDTO> comingSoon(){
+    public void updateSched() {
+        List<Schedule> schedules = scheduleRepository.findAll();
+        Set<Movie> schedulesMovies = new HashSet<>();
+        LocalDate now = LocalDate.now();
+        List<Movie> allMovies = movieRepository.findAll();
 
-        // now showing list
-        List<ShowingSchedResponse> withSchedule = scheduleRepository.FindNowShowingSchedules();
-
-        List<String> withScheduleTitles = new ArrayList<>();
-        for(ShowingSchedResponse s: withSchedule){
-            withScheduleTitles.add(s.getTitle());
-        } //get the titles of each movie with schedule
-
-        //movies list
-        List<MovieDetailsDTO> movies = movieRepository.findAllMovies();
-
-        List<MovieDetailsDTO> comingSoonMovies = new ArrayList<>();
-
-        for(MovieDetailsDTO m : movies){
-            if(!withScheduleTitles.contains(m.getTitle())){
-                comingSoonMovies.add(m);
-            }
+        for (Movie m : allMovies) {
+            Optional<Schedule> nextSchedule = scheduleRepository.findNextSchedule(m, now);
+            if (nextSchedule.isPresent()) {
+                //if you used isPresent, always remember to use get before getting the property
+                Long daysBeforeMovie = ChronoUnit.DAYS.between(now, nextSchedule.get().getShowDate());
+                if (daysBeforeMovie <= 5) { //IF 5 days or less
+                    m.setStatus(MovieStatus.NOW_SHOWING); //make it now showing
+                    schedulesMovies.add(m); //add to set
+                } else { // if too far, make it coming soon
+                    m.setStatus(MovieStatus.COMING_SOON);
+                    schedulesMovies.add(m);
+                }
+            }else{
+                    m.setStatus(MovieStatus.INACTIVE);
+                    schedulesMovies.add(m);
+                }
         }
-        return comingSoonMovies;
+        movieRepository.saveAll(schedulesMovies);
     }
+
+    public List<MovieDetailsDTO> nowShowing() {
+        updateStatus();
+        updateSched();
+
+
+
+        return movieRepository.findByStatus(MovieStatus.NOW_SHOWING).stream()
+                .map(m -> new MovieDetailsDTO(m.getPoster(),
+                        m.getTitle(), m.getRating(), m.getOverview(), m.getReleaseDate())).toList();
+
+}
+    public List<ComingSoonResponse> comingSoon(){
+        updateSched();
+        updateStatus();
+        // now showing list
+        List<Movie> comingSoonMovies = movieRepository.findByStatus(MovieStatus.COMING_SOON);
+        List<ComingSoonResponse> comingSoonResponses = new ArrayList<>();
+        ;
+        LocalDate now = LocalDate.now();
+        for(Movie m: comingSoonMovies){
+                Optional<Schedule> schedule = scheduleRepository.findNextSchedule(m, now);
+
+                if (schedule.isPresent()) {
+
+                    comingSoonResponses.add(new ComingSoonResponse(
+                            m.getPoster(),
+                            m.getTitle(),
+                            m.getRating(),
+                            m.getOverview(),
+                            m.getReleaseDate(),
+                            schedule.get().getShowDate()
+                    ));
+                }
+            }
+        return comingSoonResponses;
+    }
+
+    public void updateStatus(){
+        LocalDate now = LocalDate.now();
+        List<Schedule> beforeDateNow = scheduleRepository.findDoneSchedules(now);
+        Set<Schedule> scheds = new HashSet<>();
+        for(Schedule s: beforeDateNow){
+            s.setStatus(ScheduleStatus.COMPLETED);
+            scheds.add(s);
+        }
+        scheduleRepository.saveAll(scheds);
+
+    }
+
     public Map<String, List<ShowAvailableSeatsResponse>> showAvailableSeats(Integer scheduleId){
 
         //make list of all seats
@@ -140,7 +194,7 @@ public class    ScheduleService {
         savePrices(SeatCategory.BALCONY, request.getBalPrice(), savedSchedule);
 
         //save the movie status.
-            movie.setStatus("NOW SHOWING");
+            movie.setStatus(MovieStatus.NOW_SHOWING);
             movieRepository.save(movie);
             return "Schedule added successfully for " + request.getSlot() + " slot";
     }

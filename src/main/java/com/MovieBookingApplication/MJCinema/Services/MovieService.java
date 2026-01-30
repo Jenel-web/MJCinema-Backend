@@ -4,6 +4,7 @@ import com.MovieBookingApplication.MJCinema.DTO.MovieDetailsDTO;
 import com.MovieBookingApplication.MJCinema.DTO.TmdbMovieDTO;
 import com.MovieBookingApplication.MJCinema.DTO.TmdbMovieResponse;
 import com.MovieBookingApplication.MJCinema.Entity.Movie;
+import com.MovieBookingApplication.MJCinema.Entity.MovieStatus;
 import com.MovieBookingApplication.MJCinema.Repository.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class MovieService {
             movie.setReleaseDate(LocalDate.parse(tmdbMovieDTO.getRelease_date())); //release date is string in tmdb
             movie.setTitle(tmdbMovieDTO.getTitle());
             movie.setDuration("2 hrs");
-            movie.setStatus("COMING SOON");
+            movie.setStatus(MovieStatus.NEW);
             movie.setRating(tmdbMovieDTO.getVote_average());
             movieRepository.save(movie);
 

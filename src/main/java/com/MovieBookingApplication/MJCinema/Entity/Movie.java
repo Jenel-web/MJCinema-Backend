@@ -25,10 +25,19 @@ public class Movie {
     private Double rating;
     @Column(nullable = false, columnDefinition = "TEXT")
     private String overview; // made as text in db because some overiew are longer than 255 characters.
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status;
+    private MovieStatus status;
     @Column(name = "release_date",nullable = false) //should be snake case in db and camel case in java.
     private LocalDate releaseDate;
+
+    public void setStatus(MovieStatus status) {
+        this.status = status;
+    }
+
+    public MovieStatus getStatus() {
+        return status;
+    }
 
     public Integer getMovieId() {
         return movieId;
@@ -84,14 +93,6 @@ public class Movie {
 
     public void setOverview(String overview) {
         this.overview = overview;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 
     public LocalDate getReleaseDate() {
