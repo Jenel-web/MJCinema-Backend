@@ -46,24 +46,25 @@ public class    ScheduleService {
         List<Schedule> schedules = scheduleRepository.findAll();
         Set<Movie> schedulesMovies = new HashSet<>();
         LocalDate now = LocalDate.now();
+        LocalTime timeNow = LocalTime.now();
         List<Movie> allMovies = movieRepository.findAll();
 
         for (Movie m : allMovies) {
-            Optional<Schedule> nextSchedule = scheduleRepository.findNextSchedule(m, now);
+            Optional<Schedule> nextSchedule = scheduleRepository.findNextSchedule(m, now, timeNow);
             if (nextSchedule.isPresent()) {
                 //if you used isPresent, always remember to use get before getting the property
                 Long daysBeforeMovie = ChronoUnit.DAYS.between(now, nextSchedule.get().getShowDate());
                 if (daysBeforeMovie <= 5) { //IF 5 days or less
                     m.setStatus(MovieStatus.NOW_SHOWING); //make it now showing
-                    schedulesMovies.add(m); //add to set
-                } else { // if too far, make it coming soon
-                    m.setStatus(MovieStatus.COMING_SOON);
-                    schedulesMovies.add(m);
-                }
+                    // add to set
+                }//this already checks all the possible schedule
+               else{
+                   m.setStatus(MovieStatus.COMING_SOON);
+                } // if more than 5, its automatically coming soon
             }else{
                     m.setStatus(MovieStatus.INACTIVE);
-                    schedulesMovies.add(m);
                 }
+            schedulesMovies.add(m);
         }
         movieRepository.saveAll(schedulesMovies);
     }
@@ -88,8 +89,9 @@ public class    ScheduleService {
         List<ComingSoonResponse> comingSoonResponses = new ArrayList<>();
         ;
         LocalDate now = LocalDate.now();
+        LocalTime timeNow = LocalTime.now();
         for(Movie m: comingSoonMovies){
-                Optional<Schedule> schedule = scheduleRepository.findNextSchedule(m, now);
+                Optional<Schedule> schedule = scheduleRepository.findNextSchedule(m, now, timeNow);
 
                 if (schedule.isPresent()) {
 
@@ -99,7 +101,8 @@ public class    ScheduleService {
                             m.getRating(),
                             m.getOverview(),
                             m.getReleaseDate(),
-                            schedule.get().getShowDate()
+                            schedule.get().getShowDate(),
+                            m.getMovieId()
                     ));
                 }
             }

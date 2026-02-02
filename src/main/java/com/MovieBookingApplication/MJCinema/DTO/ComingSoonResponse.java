@@ -9,14 +9,27 @@ public class ComingSoonResponse {
     private String overview;
     private LocalDate releaseDate;
     private LocalDate showDate;
+    private Integer movieId;
 
-    public ComingSoonResponse(String poster, String title, Double rating, String overview, LocalDate releaseDate, LocalDate showDate) {
+    public ComingSoonResponse(String poster, String title,
+                              Double rating, String overview,
+                              LocalDate releaseDate, LocalDate showDate,
+                              Integer movieId) {
         this.poster = poster;
         this.title = title;
         this.rating = rating;
         this.overview = overview;
         this.releaseDate = releaseDate;
         this.showDate = showDate;
+        this.movieId = movieId;
+    }
+
+    public Integer getMovieId() {
+        return movieId;
+    }
+
+    public void setMovieId(Integer movieId) {
+        this.movieId = movieId;
     }
 
     public String getPoster() {
