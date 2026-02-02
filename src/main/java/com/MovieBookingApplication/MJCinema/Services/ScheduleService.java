@@ -76,7 +76,8 @@ public class    ScheduleService {
 
         return movieRepository.findByStatus(MovieStatus.NOW_SHOWING).stream()
                 .map(m -> new MovieDetailsDTO(m.getPoster(),
-                        m.getTitle(), m.getRating(), m.getOverview(), m.getReleaseDate())).toList();
+                        m.getTitle(), m.getRating(), m.getOverview(), m.getReleaseDate()
+                ,m.getMovieId())).toList();
 
 }
     public List<ComingSoonResponse> comingSoon(){

@@ -46,13 +46,16 @@ public class UserService {
         }
     }
 
-    public boolean loginUser(String username, String password){
+    public Users loginUser(String username, String password){
         //find in repo
-        return userRepository.findByUsername(username)
-                .map( user -> passwordEncoder.matches(password, user.getPassword()))
-                .orElse(false);
+        Users user = userRepository.findByUsername(username).orElse(null);
+        if(user != null && passwordEncoder.matches(password, user.getPassword())){
+            return user;
+        }
 
-        //return true or false
+      else{
+          return null;
+        }
     }
 
     public List<MovieTicketsDTO> showTickets(String username){

@@ -10,17 +10,28 @@ public class MovieDetailsDTO {
     private Double rating;
     private String overview;
     private LocalDate releaseDate;
+    private Integer movieId;
+
+    public Integer getMovieId() {
+        return movieId;
+    }
+
+    public void setMovieId(Integer movieId) {
+        this.movieId = movieId;
+    }
 
     public MovieDetailsDTO(String poster,
                            String title,
                            Double rating,
                            String overview,
-                           LocalDate releaseDate) {
+                           LocalDate releaseDate,
+                           Integer movieId) {
         this.poster = poster;
         this.title = title;
         this.rating = rating;
         this.overview = overview;
         this.releaseDate = releaseDate;
+        this.movieId = movieId;
     }
     public String getPoster() {
         return poster;

@@ -4,6 +4,7 @@ import com.MovieBookingApplication.MJCinema.DTO.ChangePasswordRequest;
 import com.MovieBookingApplication.MJCinema.DTO.MovieTicketsDTO;
 import com.MovieBookingApplication.MJCinema.DTO.RegisterRequest;
 import com.MovieBookingApplication.MJCinema.DTO.UserDTO;
+import com.MovieBookingApplication.MJCinema.Entity.Users;
 import com.MovieBookingApplication.MJCinema.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -48,6 +49,7 @@ public class UserController {
                 user.getPassword(), user.getConfirm());
         //checks if the username is not used yet.
         if(isRegistered) {
+            response.put("userId", user.getPassword());
             response.put("username", user.getUsername());
             response.put("message", "Welcome to MJCinema, " + user.getUsername()+ "!");
             return ResponseEntity.ok(response);
@@ -62,10 +64,10 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity <Map<String, String>> loginUSer(@RequestBody UserDTO user){
-        boolean isLoggedIn = userService.loginUser(user.getUsername(), user.getPassword());
+      Users users = userService.loginUser(user.getUsername(), user.getPassword());
         Map<String, String> login = new HashMap<>();
-        if(isLoggedIn){
-            login.put("user", "User logged in: " + user.getUsername());
+        if(users != null){
+            login.put("user", user.getUsername());
             login.put("message", "Welcome back" + user.getUsername() +
                     "!");
             return ResponseEntity.ok(login);

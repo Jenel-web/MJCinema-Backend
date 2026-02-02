@@ -16,7 +16,7 @@ public interface MovieRepository extends JpaRepository<Movie, Integer> {
 
     boolean existsByTmdbId(Long tmdbId);
 
-    @Query("SELECT new com.MovieBookingApplication.MJCinema.DTO.MovieDetailsDTO(m.poster, m.title, m.rating, m.overview, m.releaseDate) FROM Movie m")
+    @Query("SELECT new com.MovieBookingApplication.MJCinema.DTO.MovieDetailsDTO(m.poster, m.title, m.rating, m.overview, m.releaseDate, m.movieId) FROM Movie m")
     List<MovieDetailsDTO> findAllMovies();
 
     List<Movie> findByStatus(MovieStatus status);
