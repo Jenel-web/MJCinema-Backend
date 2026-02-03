@@ -1,6 +1,7 @@
 package com.MovieBookingApplication.MJCinema.Controllers;
 
 import com.MovieBookingApplication.MJCinema.DTO.*;
+import com.MovieBookingApplication.MJCinema.Entity.Schedule;
 import com.MovieBookingApplication.MJCinema.Services.ScheduleService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,5 +51,10 @@ public class ScheduleController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/movieSchedules/{id}")
+    public ResponseEntity<List<Schedule>> findSchedules(@PathVariable ("id") Integer movieId){
+        List<Schedule> nowShowingSchedules = scheduleService.findSchedules(movieId);
 
+        return ResponseEntity.ok(nowShowingSchedules);
+    }
 }

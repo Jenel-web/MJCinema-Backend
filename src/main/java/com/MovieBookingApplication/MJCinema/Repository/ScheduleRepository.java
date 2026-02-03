@@ -33,7 +33,9 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
     @Query("SELECT s FROM Schedule s WHERE s.movie = :movie AND (s.showDate > :today OR (s.showDate = :today AND s.startTime > :time)) ORDER BY s.showDate ASC LIMIT 1")
     Optional<Schedule> findNextSchedule(Movie movie, LocalDate today, LocalTime time); //makes db do the heavy lifting
 
-    @Query ("SELECT s FROM Schedule s WHERE s.showDate <= :today")
-    List<Schedule> findDoneSchedules(LocalDate today);
+    @Query ("SELECT s FROM Schedule s WHERE s.showDate < :today OR (s.showDate = :today AND s.startTime < :time)")
+    List<Schedule> findDoneSchedules(LocalDate today, LocalTime time);
 
+    @Query("SELECT s FROM Schedule s WHERE s.movie.movieId = :movieId AND (s.showDate > :today OR (s.showDate = :today AND s.startTime > :time))")
+    List<Schedule> findByMovieId(Integer movieId, LocalDate today, LocalTime time);
 }

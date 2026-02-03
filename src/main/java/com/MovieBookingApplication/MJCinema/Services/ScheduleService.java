@@ -1,5 +1,6 @@
 package com.MovieBookingApplication.MJCinema.Services;
 
+import com.MovieBookingApplication.MJCinema.Controllers.MovieController;
 import com.MovieBookingApplication.MJCinema.DTO.*;
 import com.MovieBookingApplication.MJCinema.Entity.*;
 import com.MovieBookingApplication.MJCinema.Repository.*;
@@ -111,7 +112,8 @@ public class    ScheduleService {
 
     public void updateStatus(){
         LocalDate now = LocalDate.now();
-        List<Schedule> beforeDateNow = scheduleRepository.findDoneSchedules(now);
+        LocalTime timeNow = LocalTime.now();
+        List<Schedule> beforeDateNow = scheduleRepository.findDoneSchedules(now, timeNow);
         Set<Schedule> scheds = new HashSet<>();
         for(Schedule s: beforeDateNow){
             s.setStatus(ScheduleStatus.COMPLETED);
@@ -254,4 +256,19 @@ public class    ScheduleService {
         return "Schedule cancelled";
     }
 
+    public List<Schedule> findSchedules(Integer movieId){
+        LocalDate now = LocalDate.now(); //gets the day today
+        LocalTime timeNow = LocalTime.now(); //time today
+        List<Schedule> moviesSchedules = scheduleRepository.findByMovieId(movieId, now, timeNow); // gets the schedules of the movieId
+        List<Schedule> showSchedule = new ArrayList<>();
+        for(Schedule s: moviesSchedules){
+            Long daysBeforeMovie = ChronoUnit.DAYS.between(now, s.getShowDate());
+
+            if(daysBeforeMovie <= 5){
+                showSchedule.add(s);
+            }
+        }
+
+        return showSchedule; //returns the list of now showing schedules
+    }
 }
