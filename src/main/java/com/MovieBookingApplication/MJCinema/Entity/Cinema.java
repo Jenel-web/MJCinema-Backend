@@ -12,6 +12,35 @@ public class Cinema {
     @Column(nullable = false)
     private String location;
 
+    private Integer totalRows;
+    private Integer totalColumns;
+
+    private String seatLayout;
+
+    public Integer getTotalRows() {
+        return totalRows;
+    }
+
+    public void setTotalRows(Integer totalRows) {
+        this.totalRows = totalRows;
+    }
+
+    public Integer getTotalColumns() {
+        return totalColumns;
+    }
+
+    public void setTotalColumns(Integer totalColumns) {
+        this.totalColumns = totalColumns;
+    }
+
+    public String getSeatLayout() {
+        return seatLayout;
+    }
+
+    public void setSeatLayout(String seatLayout) {
+        this.seatLayout = seatLayout;
+    }
+
     public Integer getCinemaId() {
         return cinemaId;
     }

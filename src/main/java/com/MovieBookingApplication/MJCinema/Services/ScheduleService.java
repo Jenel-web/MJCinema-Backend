@@ -4,10 +4,12 @@ import com.MovieBookingApplication.MJCinema.Controllers.MovieController;
 import com.MovieBookingApplication.MJCinema.DTO.*;
 import com.MovieBookingApplication.MJCinema.Entity.*;
 import com.MovieBookingApplication.MJCinema.Repository.*;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
@@ -43,6 +45,10 @@ public class    ScheduleService {
         return scheduleRepository.FindNowShowingSchedules();
     }
 
+    public Optional<Schedule> findSchedule(Integer scheduleId){
+      return scheduleRepository.findById(scheduleId);
+
+    }
     public void updateSched() {
         List<Schedule> schedules = scheduleRepository.findAll();
         Set<Movie> schedulesMovies = new HashSet<>();
@@ -270,5 +276,11 @@ public class    ScheduleService {
         }
 
         return showSchedule; //returns the list of now showing schedules
+    }
+
+    public List<SeatPrice> findSeatPricesBySchedule(Integer scheduleId){
+        List<SeatPrice> schedPrices = seatPriceRepository.findByScheduleScheduleId(scheduleId);
+
+        return schedPrices;
     }
 }

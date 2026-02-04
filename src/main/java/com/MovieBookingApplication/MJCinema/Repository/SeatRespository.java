@@ -17,4 +17,6 @@ public interface SeatRespository extends JpaRepository<Seat, Integer> {
             "(SELECT sch.cinema.cinemaId FROM Schedule sch WHERE sch.scheduleId= :scheduleId)")
     //finds a seat with the cinema id and also finds a schedule with the same scheduleId as the cinema
     List<Seat> findByScheduleId(Integer scheduleId);
+
+
 }
