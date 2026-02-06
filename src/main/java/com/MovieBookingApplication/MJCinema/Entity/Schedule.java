@@ -13,8 +13,8 @@ public class Schedule {
     @Column(name = "schedule_id")
     private Integer scheduleId;
 
-    @ManyToOne
     @JoinColumn(name = "movie_id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Movie movie; // many schedules for one movie but only one movie per schedule
 
     @ManyToOne

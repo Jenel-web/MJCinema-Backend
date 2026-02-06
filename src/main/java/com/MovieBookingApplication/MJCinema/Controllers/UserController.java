@@ -67,7 +67,8 @@ public class UserController {
       Users users = userService.loginUser(user.getUsername(), user.getPassword());
         Map<String, String> login = new HashMap<>();
         if(users != null){
-            login.put("user", user.getUsername());
+            login.put("username", users.getUsername());
+            login.put("userId", String.valueOf(users.getUserId()));
             login.put("message", "Welcome back" + user.getUsername() +
                     "!");
             return ResponseEntity.ok(login);

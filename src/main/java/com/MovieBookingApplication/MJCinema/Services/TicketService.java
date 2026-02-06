@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -35,7 +36,7 @@ public class TicketService {
     private SeatRespository seatRespository;
 
     @Transactional //cancels if not perfectly executed
-    public TicketDTO bookTicket(String username, Integer scheduleId, String seat){
+    public TicketDTO bookTicket(String username, Integer scheduleId, List<String> seat){
        Tickets ticket = new Tickets();
 
        //finding an entry on the db automatically creates an element that is of the same type
@@ -48,34 +49,37 @@ public class TicketService {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new RuntimeException("Schedule not found"));
         // 3. validate seat
         Cinema cinema = schedule.getCinema();
-        Seat seatNumber = seatRespository.findBySeatNumberAndCinemaCinemaId(
-                seat, cinema.getCinemaId()).orElseThrow(() -> new RuntimeException("Seat not found."));
-        // this creates a seat object that is found using the function.
-        // 4. check availability
-        boolean isTaken = ticketRepository.existsByScheduleScheduleIdAndSeatSeatNumber(scheduleId, seat);
+        List<Tickets> ticketsBooked = new ArrayList<>();
+        for(String s: seat) {
+            Seat seatNumber = seatRespository.findBySeatNumberAndCinemaCinemaId(
+                    s, cinema.getCinemaId()).orElseThrow(() -> new RuntimeException("Seat not found."));
+            // this creates a seat object that is found using the function.
+            // 4. check availability
+            boolean isTaken = ticketRepository.existsByScheduleScheduleIdAndSeatSeatNumber(scheduleId, s);
 
-        if(isTaken){
-            throw new RuntimeException("Seat is already taken.");
+            if (isTaken) {
+                throw new RuntimeException("Seat is already taken.");
+            }
+            // 5. calculate price and deduct
+            SeatPrice price = seatPriceRepository.findBySeatCategoryAndScheduleScheduleId(seatNumber.getSeatCategory(),
+                    scheduleId).orElseThrow(() -> new RuntimeException("Price not found."));
+
+            Double ticketPrice = price.getPrice();
+            Double currentBalance = user.getBalance();
+            if (currentBalance < ticketPrice) {
+                throw new RuntimeException("Insufficient balance.");
+                //throw is the word for errors. not return!!!!
+            }
+            user.setBalance(currentBalance - ticketPrice);
+            // 6. save ticket
+            ticket.setUser(user);
+            ticket.setSchedule(schedule);
+            ticket.setSeat(seatNumber);
+            ticket.setTicketCode("MJ-" + UUID.randomUUID().toString().substring(0, 6));
+            ticket.setBookedTime(LocalDateTime.now());
+            ticketsBooked.add(ticket);
         }
-        // 5. calculate price and deduct
-        SeatPrice price = seatPriceRepository.findBySeatCategoryAndScheduleScheduleId(seatNumber.getSeatCategory(),
-                scheduleId).orElseThrow(() -> new RuntimeException("Price not found."));
-
-        Double ticketPrice = price.getPrice();
-        Double currentBalance = user.getBalance();
-        if(currentBalance < ticketPrice){
-            throw  new RuntimeException("Insufficient balance.");
-            //throw is the word for errors. not return!!!!
-        }
-        user.setBalance(currentBalance - ticketPrice);
-        // 6. save ticket
-        ticket.setUser(user);
-        ticket.setSchedule(schedule);
-        ticket.setSeat(seatNumber);
-        ticket.setTicketCode("MJ-" + UUID.randomUUID().toString().substring(0,6));
-        ticket.setBookedTime(LocalDateTime.now());
-
-        ticketRepository.save(ticket);
+        ticketRepository.saveAll(ticketsBooked);
         return DTOWrapper(ticket);
     }
 

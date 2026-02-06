@@ -30,7 +30,7 @@ public class TicketsController {
     //you can only have one requestbody when making a post http method so
     // you need to make a request dto and encapsulate the variables.
    public ResponseEntity<TicketDTO> bookTicket (@RequestBody BookingRequest request,  Authentication auth){
-       TicketDTO ticket = ticketService.bookTicket(currentUser(auth), request.getScheduleId(), request.getSeat());
+       TicketDTO ticket = ticketService.bookTicket(currentUser(auth), request.getScheduleId(), request.getSelectedSeat());
 
        return ResponseEntity.ok(ticket);
     }

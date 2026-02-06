@@ -72,7 +72,7 @@ public class ScheduleController {
         return ResponseEntity.ok(nowShowingSchedules);
     }
 
-    @GetMapping("/schedPrices/{id}")
+    @GetMapping("/schedPrice/{id}")
     public ResponseEntity<List<SeatPrice>> findSchedPrices(@PathVariable("id") Integer scheduleId) {
         List<SeatPrice> seatPrices =  scheduleService.findSeatPricesBySchedule(scheduleId);
 
