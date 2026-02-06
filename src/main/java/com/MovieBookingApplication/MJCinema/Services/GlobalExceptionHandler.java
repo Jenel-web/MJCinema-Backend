@@ -30,6 +30,7 @@ public class GlobalExceptionHandler {
         errors.put("timestamp", LocalDateTime.now());
         errors.put("status", HttpStatus.BAD_REQUEST.value());
 
+        
         // writes the DTO messages
         String errorMessage = ex.getBindingResult().getFieldErrors().get(0).getDefaultMessage();
         errors.put("message", errorMessage);
