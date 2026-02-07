@@ -2,6 +2,7 @@ package com.MovieBookingApplication.MJCinema.Controllers;
 
 import com.MovieBookingApplication.MJCinema.DTO.*;
 import com.MovieBookingApplication.MJCinema.Services.TicketService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://127.0.0.1:5500", allowCredentials = "true")//can be used when credentials are included.
 @RestController
 @RequestMapping("/ticket")
 public class TicketsController {
@@ -25,12 +26,12 @@ public class TicketsController {
 
         return name;
     }
-    @PreAuthorize("hasRole('USER')")
+   // @PreAuthorize("hasRole('USER')")
     @PostMapping("/book")
     //you can only have one requestbody when making a post http method so
     // you need to make a request dto and encapsulate the variables.
-   public ResponseEntity<TicketDTO> bookTicket (@RequestBody BookingRequest request,  Authentication auth){
-       TicketDTO ticket = ticketService.bookTicket(currentUser(auth), request.getScheduleId(), request.getSelectedSeat());
+   public ResponseEntity<TicketDTO> bookTicket (@RequestBody BookingRequest request){
+       TicketDTO ticket = ticketService.bookTicket(request.getUserId(), request.getScheduleId(), request.getSelectedSeat());
 
        return ResponseEntity.ok(ticket);
     }

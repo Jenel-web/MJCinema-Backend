@@ -36,21 +36,21 @@ public class TicketService {
     private SeatRespository seatRespository;
 
     @Transactional //cancels if not perfectly executed
-    public TicketDTO bookTicket(String username, Integer scheduleId, List<String> seat){
-       Tickets ticket = new Tickets();
+    public TicketDTO bookTicket(Integer userId, Integer scheduleId, List<String> selectedSeat){
 
        //finding an entry on the db automatically creates an element that is of the same type
         // where you can fetch the data in the entry by calling the declared name.
 
 
         // 1. validate user
-        Users user = userRepository.findByUsername(username).orElseThrow(()-> new UsernameNotFoundException("User not found!"));
+        Users user = userRepository.findById(userId).orElseThrow(()-> new UsernameNotFoundException("User not found!"));
         // 2. validate schedule
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new RuntimeException("Schedule not found"));
         // 3. validate seat
         Cinema cinema = schedule.getCinema();
         List<Tickets> ticketsBooked = new ArrayList<>();
-        for(String s: seat) {
+        for(String s: selectedSeat) {
+            Tickets ticket = new Tickets();
             Seat seatNumber = seatRespository.findBySeatNumberAndCinemaCinemaId(
                     s, cinema.getCinemaId()).orElseThrow(() -> new RuntimeException("Seat not found."));
             // this creates a seat object that is found using the function.
@@ -80,7 +80,7 @@ public class TicketService {
             ticketsBooked.add(ticket);
         }
         ticketRepository.saveAll(ticketsBooked);
-        return DTOWrapper(ticket);
+        return DTOWrapper(ticketsBooked.get(0)); //returns the first ticket in the frontend.
     }
 
 
