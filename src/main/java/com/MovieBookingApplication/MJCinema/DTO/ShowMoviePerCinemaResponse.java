@@ -13,6 +13,16 @@ public class ShowMoviePerCinemaResponse {
     private Integer movieId;
     private MovieStatus status;
 
+    public ShowMoviePerCinemaResponse(String poster, String title, Double rating, String overview, LocalDate releaseDate, Integer movieId, MovieStatus status) {
+        this.poster = poster;
+        this.title = title;
+        this.rating = rating;
+        this.overview = overview;
+        this.releaseDate = releaseDate;
+        this.movieId = movieId;
+        this.status = status;
+    }
+
     public String getPoster() {
         return poster;
     }
