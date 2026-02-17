@@ -35,6 +35,9 @@ public class SecurityConfig {
                                 .requestMatchers("/schedule/**").permitAll() // Allows now-showing and coming-soon
                                 .requestMatchers("/error").permitAll()
                                 .requestMatchers("/movie/**").permitAll()
+                                .requestMatchers("/seat/**").permitAll() //makes them able to access the seats
+                                .requestMatchers("/ticket/**").permitAll()
+                                .requestMatchers("/cinema/**").permitAll()
                                 .anyRequest().authenticated())
                 .formLogin(form -> form
                 .loginPage("/index.html") // Specifically show this file first
