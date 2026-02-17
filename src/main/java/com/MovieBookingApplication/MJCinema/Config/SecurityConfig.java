@@ -30,13 +30,18 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth ->
                         auth
                                 .requestMatchers("/index.html", "/css/**", "/js/**", "/images/**").permitAll()
-                                // 2. PROTECT everything else
+                                // PROTECT everything else
+                                .requestMatchers("/user/login", "/user/register").permitAll()
+                                .requestMatchers("/schedule/**").permitAll() // Allows now-showing and coming-soon
+                                .requestMatchers("/error").permitAll()
+                                .requestMatchers("/movie/**").permitAll()
                                 .anyRequest().authenticated())
                 .formLogin(form -> form
                 .loginPage("/index.html") // Specifically show this file first
                 .permitAll())
-                .httpBasic(withDefaults());
-
+                .httpBasic(withDefaults())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()));
+                //for security configuration
         return http.build();
 
     }

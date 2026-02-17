@@ -1,5 +1,5 @@
-import { UI } from "../ui.js";
-import { Auth } from "../auth.js";
+import { UI } from "./js//UI.js";
+import { Auth } from "./js/auth.js";
 
 const authApp = new Auth(); //automatically does what the function sayss
 const ui = new UI(); //imports UI and instantiates
@@ -189,7 +189,6 @@ function renderScheduleSelection(schedules) {
   container.appendChild(proceedBtn);
 }
 
-
 const nowShowing = document.getElementById("now-showing");
 const comingSoon = document.getElementById("coming-soon");
 const cinema = document.getElementById("cinema");
@@ -208,13 +207,12 @@ if (comingSoon) {
     loadMovies("http://localhost:8080/schedule/coming-soon", "soon"); //this is where the typex comes from
   });
 }
-if(cinema){
-  cinema.addEventListener("click", (e) =>{
+if (cinema) {
+  cinema.addEventListener("click", (e) => {
     e.preventDefault();
 
     //const response = await fetch("http://localhost:8080/cinema/movies/")
-    
-  })
+  });
 }
 window.ClickedCardHandler = ClickedCardHandler;
 window.closeModal = closeModal;
