@@ -1,5 +1,6 @@
 package com.MovieBookingApplication.MJCinema.Services;
 
+import com.MovieBookingApplication.MJCinema.DTO.ShowCinemaRequest;
 import com.MovieBookingApplication.MJCinema.DTO.ShowMoviePerCinemaResponse;
 import com.MovieBookingApplication.MJCinema.DTO.ShowingSchedResponse;
 import com.MovieBookingApplication.MJCinema.Entity.Cinema;
@@ -63,4 +64,11 @@ public class CinemaService {
         }
         return moviesPerCinema;
     }
+
+    public List<ShowCinemaRequest> showCinemas(){
+        List<ShowCinemaRequest> cinemas = cinemaRepository.findAllCinemas();
+
+        return cinemas;
+    }
+
 }
