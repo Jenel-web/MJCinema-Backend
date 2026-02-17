@@ -29,8 +29,12 @@ public class SecurityConfig {
                 .headers(headers -> headers.frameOptions(frame -> frame.disable()))
                 .authorizeHttpRequests(auth ->
                         auth
-                                .requestMatchers("/tickets/book").hasRole("USER")
-                                .anyRequest().permitAll())
+                                .requestMatchers("/index.html", "/css/**", "/js/**", "/images/**").permitAll()
+                                // 2. PROTECT everything else
+                                .anyRequest().authenticated())
+                .formLogin(form -> form
+                .loginPage("/index.html") // Specifically show this file first
+                .permitAll())
                 .httpBasic(withDefaults());
 
         return http.build();

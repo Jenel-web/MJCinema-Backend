@@ -1,0 +1,1064 @@
+ :root {
+  /* The Boutique Palette */
+  --navy: #001f3f;       /* Background */
+  --white: #ffffff;      /* Cards/Text */
+  --bronze: #8B4513;     /* Buttons/Highlights */
+  --soft-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+/* Global Reset - Makes sure every browser treats your page the same */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: var(--navy);
+  color: var(--white);
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  padding-top: 80px;
+}
+ 
+.login-container {
+    background-color: var(--white); 
+    color: var(--navy);            
+    width: 400px;
+    height: auto;                 
+    padding: 40px;                 
+    display: flex;
+    flex-direction: column;     
+    justify-content: center;
+    border-radius: 25px;
+    box-shadow: var(--soft-shadow);
+    border: none;                 
+    border-top: 8px solid var(--bronze); 
+    border-bottom: 8px solid var(--bronze);
+    height: 450px; /* Set one specific height for the card */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.login-container h2{
+    display: flex;
+    justify-content: center;
+    font-size: 2.3em;
+}
+
+.input-box{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 310px;
+
+    
+}
+
+.input-box input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+/* Style your button like a pro */
+.login-button {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--bronze);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.login-button:hover {
+    background-color: #5d2e0d; /* Darker bronze on hover */
+}
+
+.remember-container {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    margin-bottom: 15px;
+    color: #666;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* This glues the box and text together */
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* This is the "magic" property that controls the space between box and text */
+}
+
+.checkbox-group input {
+  cursor: pointer;
+  width: auto; /* Prevents the checkbox from stretching */
+}
+
+.remember-container a {
+  color: var(--bronze);
+  text-decoration: none;
+}
+
+.remember-container a:hover {
+  text-decoration: underline;
+}
+
+#auth-feedback {
+    /* Keep it in the layout but make it thin */
+    margin: 0; 
+    height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+#auth-feedback.feedback-visible {
+    height: 40px;
+    margin-bottom: 10px;
+}
+/* Start hidden */
+.feedback-hidden {
+    visibility: hidden;
+    opacity: 0;
+    max-height: 0;
+    margin-bottom: 0;
+    overflow: hidden;
+    transition: all 0.3s ease; /* Makes the transition smooth, not jerky */
+}
+
+.feedback-visible {
+    visibility: visible;
+    opacity: 1;
+    max-height: 100px; /* Give it enough room to grow */
+    margin-bottom: 20px;
+    padding: 12px;
+}
+/* The "Boutique Red" Vibe */
+.error-vibe {
+    background-color: #fce4e4;  /* Very soft red/pink */
+    color: #921c1c;             /* Deep professional crimson */
+    border: 1px solid #f1b0b0;
+    border-left: 5px solid #921c1c; /* A bold accent line */
+}
+
+/* The Animation Logic */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.shake {
+    animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+/* The Floating Popup*/
+.popup-hidden {
+    position: fixed;
+    top: -100px; 
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 15px 30px;
+    color: white;
+    font-weight: 600;
+    border-radius: 8px;
+    z-index: 9999;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+    transition: top 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy entrance */
+}
+
+/* When the JS adds .show, it slides down */
+.popup-hidden.show {
+    top: 30px; 
+}
+
+/* Boutique Red (Success) */
+.popup-red {
+    background-color: #e74c3c;
+    border-bottom: 4px solid #c0392b;
+}
+
+/* Boutique Green (Success) */
+.popup-green {
+    background-color: #2ecc71;
+    border-bottom: 4px solid #27ae60;
+}
+ /* Dashboard HTML: Navigation*/
+nav{
+    position: fixed;
+    background-color: var(--white);
+    top: 0;
+    width: 100%;
+    left: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: center; /*this makes it come to the center */
+    gap: 1rem;
+    backdrop-filter: blur(10px); /* This creates the "Glass" effect */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(205, 127, 50, 0.2);
+}
+
+.nav-container {
+    width: 100%;
+    max-width: 1400px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 80px;
+    padding: 0 40px;
+}
+
+.logo-container{
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-right: 200px;
+}
+
+.logo-container img{
+    height: 80px;
+    width: 80px;
+    mix-blend-mode: multiply;
+}
+
+.logo-container h3{
+    color: var(--navy);
+    font-size: 1.2rem;
+    letter-spacing: 3px; /* Premium spacing */
+    font-weight: 300;
+    margin-right: 5rem;
+}
+
+.links-container{
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+ .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 30px;
+    
+  }
+
+.nav-links a{
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: bold;
+    color: var(-);
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    position: relative;
+    letter-spacing: 1.3px;
+
+}
+
+.nav-links a:hover{
+    color: var(--bronze);
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -5px;
+    left: 0;
+    background-color: var(--bronze);
+    transition: width 0.3s ease;
+}
+
+/* Now-Showing Section */
+#now-showing {
+    width: 100%;
+    padding: 40px 0;
+}
+
+.movie-grid {
+    display: grid;
+    /* This creates a responsive grid: min card width 250px, max 1fr */
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 30px;
+    padding: 20px 5%;
+    /* Remove all the horizontal scroll/swipe properties */
+    overflow-x: visible;
+    scroll-snap-type: none;
+}
+
+.movie-card {
+     filter: grayscale(0.4); 
+    background-color: var(--navy);
+    border-radius: 15px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    /* Reset the transformations from the stacking effect */
+    transform: none;
+    opacity: 1;
+    margin: 0;
+}
+
+/* A nice, subtle hover effect for the grid */
+.movie-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+    z-index: 2;
+}
+
+.movie-card img {
+    width: 100%;
+    aspect-ratio: 2 / 3; /* Keeps all posters the same size */
+    object-fit: cover;
+}
+
+.card-info {
+    padding: 15px;
+    text-align: center;
+}
+.book-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: var(--bronze);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.book-btn:hover {
+    background-color: #a0522d;
+    filter: brightness(1.2);
+}
+
+/* Container for the specific 'Coming Soon' card to look disabled */
+.movie-card:has(.coming-soon-tag) {
+/* Slightly desaturate the poster */
+    opacity: 0.85;          /* Makes it feel 'faded' */
+    transition: all 0.3s ease;
+}
+
+/* The Brown Fading Tag */
+.coming-soon-tag {
+    background-color: #5d4037; /* Deep Earthy Brown */
+    color: #d7ccc8;           /* Light sand color for text */
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-bottom: 8px;
+    /* This creates the 'fading' look using a gradient */
+    background: linear-gradient(135deg, #e23c09 0%, #161514 100%);
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+}
+
+/* The Date Text */
+.movie-date {
+    color: #8d6e63; /* Muted brown */
+    font-size: 1.1rem;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+/* Remove hover effects for coming soon cards so they don't 'react' to the mouse */
+.movie-card:has(.coming-soon-tag):hover {
+    transform: none; 
+    box-shadow: none;
+}
+
+/* The Modal Background (Overlay) */
+#movie-modal {
+    display: none; /* Hidden by default */
+    position: fixed; 
+    z-index: 2000; /* Stays on top of everything */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85); /* Darken the background */
+    backdrop-filter: blur(5px); /* Modern blur effect */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Prevents the background from scrolling */
+}
+
+
+
+
+
+/* The Modal Content for Now Showing Movies */
+.modal-content {
+    background: #1c1c1c;
+    color: white;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 800px;
+    position: relative;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    display: flex;
+    gap: 25px;
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Animation for the popup */
+@keyframes fadeIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* Close Button (X) */
+.close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 30px;
+    font-weight: bold;
+    color: #888;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close:hover {
+    color: #ff4d4d; /* Changes to red on hover */
+}
+
+
+
+
+/* Layout inside the modal */
+.modal-content img {
+    width: 250px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.modal-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.modal-info h2 {
+    margin-top: 0;
+    font-size: 2rem;
+    color: #f1c40f; /* Cinema Gold */
+}
+
+.modal-info .overview {
+    line-height: 1.6;
+    color: #ccc;
+}
+
+/* The Booking Button inside the modal */
+.book-btn-modal {
+    background-color: var(--bronze);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    align-self: flex-start;
+    transition: background 0.3s;
+}
+
+.book-btn-modal:hover {
+    background-color:var(--bronze);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between; /* Pushes title left, rating right */
+    align-items: center;           /* Keeps them vertically aligned */
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+/* Fix for the rating style */
+.modal-header .rating {
+    color: #f1c40f;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 1.3rem;
+    white-space: nowrap; /* Prevents the rating from wrapping */
+
+}
+
+/* Ensure title doesn't take up 100% width and squash the rating */
+.modal-header h2 {
+    margin: 0;
+    max-width: 70%; 
+}
+
+#schedule-container {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.time-slot-btn {
+    background-color: #e50914; /* Cinema Red */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.time-slot-btn:hover {
+    background-color: #b20710;
+    transform: scale(1.05);
+}
+
+.schedule-dropdown {
+    width: 100%;
+    padding: 12px;
+    background-color: #2c2c2c;
+    color: white;
+    border: 2px solid #cd7f32; /* Bronze border */
+    border-radius: 5px;
+    font-size: 1rem;
+    margin-bottom: 15px;
+    cursor: pointer;
+}
+
+.schedule-dropdown option {
+    background-color: #1a1a1a;
+    color: white;
+}
+
+.confirm-sched-btn {
+    width: 100%;
+    background-color:var(--bronze); /* Gold to stand out from the red "Book" button */
+    color: black;
+    border: none;
+    padding: 12px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.confirm-sched-btn:hover {
+    background-color: var(--bronze);
+}
+
+
+/* for the movie booking */
+/* blueprint.css */
+.blueprint-grid {
+    display: grid;
+    /* Grid columns must match the layout string length */
+    grid-template-columns: repeat(var(--grid-cols), 1fr); 
+    gap: 10px;
+    padding: 20px;
+    background: var(--navy);
+    border-radius: 10px;
+}
+
+.seat {
+    width: 35px;
+    height: 35px;
+    background-color: #444451;
+    color: white;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    cursor: pointer;
+}
+
+.aisle-spacer {
+    width: 35px;
+    height: 35px;
+    background: transparent; /* Makes the space invisible */
+    pointer-events: none;     /* Users can't click the floor */
+}
+
+/* Legend Styling */
+
+.seat.selected {
+    background: #f1c40f; /* Gold for selection */
+    box-shadow: 0 0 15px #f1c40f;
+    border-color: #fff;
+}
+
+.seat.occupied {
+    background: #d10f0f;
+    border-color: #1a1c2f;
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.aisle-spacer {
+    width: 30px;
+    height: 30px;
+}
+
+/* Container for the whole grid */
+.blueprint-grid {
+    display: grid;
+    /* This variable is set by your JS: grid.style.setProperty("--grid-cols", cols) */
+    grid-template-columns: repeat(var(--grid-cols), 35px); 
+    gap: 8px;
+    justify-content: center;
+    padding: 40px;
+    /* The technical "tilted" look */
+    transform: perspective(1200px) rotateX(15deg);
+    margin: 0 auto;
+}
+
+/* Hover effect for available seats */
+.seat:not(.occupied):hover {
+    background: rgba(0, 210, 255, 0.3);
+    box-shadow: 0 0 10px #00d2ff;
+    transform: translateY(-2px);
+}
+
+/* Selected state (When clicked) */
+.seat.selected {
+    background: #f1c40f; /* Gold selection */
+    border-color: #fff;
+    box-shadow: 0 0 15px #f1c40f;
+    color: #000;
+}
+
+/* Occupied state (Already booked) */
+.seat.occupied {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #444;
+    color: #444;
+    cursor: not-allowed;
+    opacity: 0.4;
+}
+
+
+/* The curved movie screen */
+.screen-container {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.curved-screen {
+    width: 60%;
+    height: 5px;
+    background: #fff;
+    margin: 0 auto 10px;
+    border-radius: 50%;
+    box-shadow: 0 -10px 25px rgba(255, 255, 255, 0.8);
+}
+
+.screen-container p {
+    color: #00d2ff;
+    letter-spacing: 8px;
+    font-size: 12px;
+    opacity: 0.6;
+}
+
+/* Checkout Bar at the bottom */
+.checkout-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background:#0a192f;
+    border-top: 1px solid #00d2ff;
+    padding: 20px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 100;
+}
+
+.info h3 {
+    margin: 0;
+    color: #f1c40f;
+}
+
+.seat.vip-seat {
+    border-color: #e74c3c; /* Red border for VIP */
+    color: #e74c3c;
+}
+/* Container for the whole legend */
+.legend-container {
+    display: flex;
+    flex-direction: row;      /* Force items to be side-by-side */
+    justify-content: center;   /* Center them horizontally */
+    gap: 30px;                /* Space between each legend item */
+    margin-bottom: 25px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+/* Individual legend item (box + text) */
+.legend-item {
+    display: flex;
+    align-items: center;      /* Align box and text vertically */
+    gap: 8px;                 /* Space between the color box and the label */
+    color: #fff;
+    font-size: 14px;
+}
+
+/* Sample boxes in the legend */
+.seat-sample {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+}
+
+.available { background-color: #444451; }
+.selected { background-color: #f1c40f; }
+.occupied { background-color: rgba(255, 255, 255, 0.1); }
+
+.booking-wrapper {
+    padding-bottom: 100px; /* Space for the checkout div to sit comfortably */
+}
+
+#seat-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-cols), 1fr);
+    gap: 12px;
+    padding: 20px;
+    margin-bottom: 50px; /* Creates a gap between the last row and the checkout info */
+    background: rgba(0, 0, 0, 0.2); /* Optional: darkens seat area for contrast */
+    border-radius: 15px;
+}
+
+/* The Checkout/Info Div */
+.checkout-section {
+    margin-top: 30px;
+    padding: 20px;
+    border-top: 1px solid #444;
+    background-color: #111; /* Keeps it distinct from the seat area */
+}
+
+/* Header & Back Button */
+.booking-header {
+  position: relative;
+  text-align: center;
+  padding: 20px 0;
+  margin-bottom: 20px;
+}
+
+.btn-back {
+  position: absolute;
+  top: 20px;
+  right: 10px; /* Moves it to the upper right */
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.btn-back:hover {
+  background: #ff4d4d;
+  border-color: #ff4d4d;
+}
+
+/* Bottom Checkout Bar */
+.checkout-bar {
+  position: fixed; /* Keeps it visible at the bottom */
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #1a1a1a;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 50px;
+  border-top: 1px solid #333;
+  box-sizing: border-box;
+  z-index: 100;
+}
+
+.checkout-bar .info p {
+  color: #aaa;
+  margin: 0;
+  font-size: 14px;
+}
+
+.checkout-bar .info h3 {
+  color: #fff;
+  margin: 5px 0 0 0;
+  font-size: 24px;
+}
+
+/* The Confirm Button */
+.btn-confirm {
+  background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+  color: white;
+  border: none;
+  padding: 15px 35px;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 210, 255, 0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-confirm:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 210, 255, 0.4);
+}
+
+.btn-confirm:active {
+  transform: translateY(0);
+}
+
+/* Ensure the grid doesn't get hidden behind the bar */
+.blueprint-container {
+  padding-bottom: 120px; 
+}
+
+/* 1. The semi-transparent backdrop (The "Shadow World") */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85); /* Darken the background */
+  backdrop-filter: blur(5px);      /* Modern "glass" effect */
+  display: none;                   /* Hidden by default */
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;                   /* Stay on top of everything */
+}
+
+/* 2. The actual popup box */
+.modal-content {
+    background: #1c1c1c;
+    color: white;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 800px; /* Restored wide view */
+    display: flex; /* Side-by-side Image and Text */
+    gap: 25px;
+}
+@keyframes modalPop {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.modal-content-2 h3 {
+  color: #fff;
+  margin-top: 0;
+}
+
+.modal-content-2 p {
+  color: #bbb;
+  margin-bottom: 25px;
+}
+
+/* 3. Button Container */
+.modal-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+/* 4. Individual Button Styling */
+.modal-buttons button {
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+#cancel-btn {
+  background: #333;
+  color: #fff;
+}
+
+#cancel-btn:hover {
+  background: #444;
+}
+
+#confirm-btn {
+  background: #e50914; /* Netflix/Cinema Red */
+  color: #fff;
+}
+
+#confirm-btn:hover {
+  background: #ff0a16;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(229, 9, 20, 0.4);
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between; /* Pushes Back to left, Yes to right */
+  align-items: center;
+  margin-top: 20px;
+  width: 100%;
+}
+
+/* Red Back Button (Left side) */
+.back-style {
+  background-color: #a82828; /* Deep Red */
+  color: white;
+  padding: 10px 25px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.back-style:hover {
+  background-color: #cc3333;
+}
+
+/* Brown Yes Button (Right side) */
+.yes-style {
+  background-color: #5d4037; /* Coffee/Wood Brown */
+  color: white;
+  padding: 10px 30px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: transform 0.2s, background 0.3s;
+}
+
+.yes-style:hover {
+  background-color: #6d4c41;
+  transform: scale(1.05); /* Slight "pop" on the confirm button */
+}
+
+/* Make sure the modal content doesn't get too wide */
+.modal-content-2 {
+  background: #1e1e1e;
+  padding: 25px;
+  border-radius: 15px;
+  border: 2px solid #333;
+  width: 350px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Booking Status Pop Up */
+/* Status Modal Specifics */
+.status-card {
+    display: flex;
+    background: #1a1a1a; /* Darker for better contrast */
+    width: 600px; /* Increased length for rectangular look */
+    min-height: 150px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    animation: slideIn 0.3s ease-out;
+}
+
+#status-accent-bar {
+    width: 12px; /* The bold color strip on the left */
+    height: 100%;
+}
+
+.status-body {
+    display: flex;
+    align-items: center;
+    padding: 0 30px;
+    flex-grow: 1;
+    gap: 20px;
+}
+
+.status-text {
+    flex-grow: 1;
+}
+
+#status-title {
+    margin: 0;
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+}
+
+#status-message {
+    margin: 5px 0 0;
+    color: #bbb;
+    font-size: 0.95rem;
+}
+
+/* Success State - Boutique Gold */
+.status-card.success #status-accent-bar { background: #d4a373; }
+.status-card.success #status-title { color: #d4a373; }
+
+/* Error State - Vibrant Seen Red */
+.status-card.error #status-accent-bar { background: #ff3e3e; }
+.status-card.error #status-title { color: #ff3e3e; }
+
+#status-ok-btn {
+    padding: 10px 25px;
+    white-space: nowrap;
+    background: transparent;
+    border: 1px solid #444;
+    color: #fff;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#status-ok-btn:hover {
+    background: #fff;
+    color: #000;
+}
+
+@keyframes slideIn {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}

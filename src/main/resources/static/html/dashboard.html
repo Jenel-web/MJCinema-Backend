@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel = "stylesheet" href = "../css/style.css">
+</head>
+<body>
+    <nav class = "navbar">
+    <div class="nav-container">
+        <div class="logo-container">
+            <img src = "../images/MJCinema logo.png" alt = "mjcinema logo">
+            <h3>MJCINEMA</h3>
+        </div>
+        <div class="links-container">
+            <ul class="nav-links">
+                <li> <a href = "#now-showing" id="now-showing">Now Showing</a></li>
+                <li> <a href = "#coming-soon" id ="coming-soon">Coming Soon</a></li>
+                <li> <a href = "#cinema" id = "cinema">Cinema</a></li>
+                <li> <a href = "#profile" id = "profile">Profile</a></li>
+            </ul>
+        </div>
+    </div>
+    
+    </nav>
+    <!-- NOW SHOWING SECTION -->
+   <section id = "now-showing">
+    <!-- <h2 class="now-showing-section">Now Showing</h2> -->
+    <div class="movie-grid" id = "movie-grid">
+       <div class="movie-modal"></div>
+    </div>
+    </section>
+
+    <!-- COMING SOON SECTION -->
+   <section id = "coming-soon">
+    <div class="movie-grid" id = "movie-grid">
+        <h2></h2>
+    </div>
+    </section>
+
+    <div id="movie-modal" style="display:none;">
+    </div>
+<script type = "module" src = "../js/mjcinema.js"></script>
+</body>
+</html>

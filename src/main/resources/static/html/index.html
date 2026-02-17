@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Page</title>
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body>
+    <form action="/login" method="POST" id="login-form">
+      <div class="login-container">
+        <div id="auth-feedback" class="feedback-hidden"></div>
+        <h2>Welcome Back!</h2>
+        <div class="username-container">
+          <div class="input-box">
+            <input
+              type="text"
+              id="username"
+              name="username"
+              placeholder="Username"
+            />
+          </div>
+        </div>
+        <br />
+        <div class="password-container">
+          <div class="input-box">
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Password"
+              autocomplete="current-password"
+            />
+          </div>
+        </div>
+        <br />
+        <div class="remember-container">
+          <div class="checkbox-container">
+            <input type="checkbox" />
+            <label>Remember me</label>
+          </div>
+          <a href="#">Forgot Password?</a>
+        </div>
+        <div class="login">
+          <label></label>
+          <button type="submit" class="login-button" id="login-button">
+            Login
+          </button>
+        </div>
+        <div class="register-container">
+          <a>Don't have an account?</a>
+          <a href="register.html">Register</a>
+        </div>
+      </div>
+    </form>
+    <div id="status-popup" class="popup-hidden"></div>
+    <script type="module" src="../js/auth.js"></script>
+    <script type="module" src="../js/mjcinema.js"></script>
+    <!-- does not need the ui.js since it is getting imported -->
+  </body>
+</html>
