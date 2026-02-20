@@ -11,6 +11,6 @@ import java.util.List;
 @Repository
 public interface CinemaRepository extends JpaRepository<Cinema, Integer>{
 
-    @Query("SELECT new com.MovieBookingApplication.MJCinema.DTO.ShowCinemaRequest(c.location, c.cinemaId) FROM Cinema c")
+    @Query("SELECT new com.MovieBookingApplication.MJCinema.DTO.ShowCinemaRequest(c.location, c.cinemaId, c. cinemaName) FROM Cinema c")
     List<ShowCinemaRequest> findAllCinemas(); //right way to get something from db
 }

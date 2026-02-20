@@ -3,10 +3,20 @@ package com.MovieBookingApplication.MJCinema.DTO;
 public class ShowCinemaRequest {
     private String location;
     private Integer cinemaId;
+    private String cinemaName;
 
-    public ShowCinemaRequest(String location, Integer cinemaId) {
+    public ShowCinemaRequest(String location, Integer cinemaId, String cinemaName) {
         this.location = location;
         this.cinemaId = cinemaId;
+        this.cinemaName = cinemaName;
+    }
+
+    public String getCinemaName() {
+        return cinemaName;
+    }
+
+    public void setCinemaName(String cinemaName) {
+        this.cinemaName = cinemaName;
     }
 
     public Integer getCinemaId() {

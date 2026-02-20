@@ -11,11 +11,19 @@ public class Cinema {
     private Integer cinemaId;
     @Column(nullable = false)
     private String location;
-
+    private String cinemaName;
     private Integer totalRows;
     private Integer totalColumns;
 
     private String seatLayout;
+
+    public String getCinemaName() {
+        return cinemaName;
+    }
+
+    public void setCinemaName(String cinemaName) {
+        this.cinemaName = cinemaName;
+    }
 
     public Integer getTotalRows() {
         return totalRows;
