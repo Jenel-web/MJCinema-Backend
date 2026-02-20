@@ -1,65 +1,50 @@
-# 🎬 MJCINEMA : Movie Ticket Booking Application
+🎬 MJ Cinema | Full-Stack Boutique Booking System
+A premium, end-to-end movie ticketing application built with Java (Spring Boot) and Vanilla JavaScript. This project focuses on a "boutique" user experience, featuring real-time seat selection, transactional integrity, and custom error handling.
 
-**Author:** Mark Jenel Cortas
+✨ Key Features
+- Dynamic Seat Selection: Interactive UI for selecting specific seats with real-time category-based pricing.
 
-**Level:** 2nd Year IT Student - Personal Project
+- Full-Stack Integration: Seamless communication between a RESTful Spring Boot API and a responsive frontend.
 
-**Tech Stack:** Java, Spring Boot, Spring Data JPA, MySQL, Spring Security
+- Transactional Booking: Ensures data integrity—seats are only reserved if the user's balance deduction is successful.
 
-## 🚀 Project Overview
+- Global Exception Handling: A robust backend "safety net" that provides meaningful feedback to the user (e.g., "Insufficient Balance" or "Seat Taken").
 
-This is a robust backend REST API for a Movie Theater management system. It allows users to browse movies and book tickets (VIP or Regular), while providing an administrative layer for managing movie listings and viewing booking statistics. This project was developed as a challenge to go beyond my university curriculum and master industry-standard backend architecture.
+- Boutique Aesthetic: A custom-designed dark/gold theme tailored for a high-end cinema experience.
 
-## ✨ Key Features
+🛠️ Tech Stack
+Backend: Java 25, Spring Boot 3.5.9, Spring Security, Spring Data JPA.
 
-* **User Management:** Secure registration and authentication using **Spring Security** and **BCrypt** password hashing.
-* **Role-Based Access Control (RBAC):** * `USER`: Can register, book tickets, and view/cancel their own bookings.
-* `ADMIN`: Can add/remove movies and view all tickets sold for specific films.
+Frontend: HTML5, CSS3 (Custom Boutique Theme), Vanilla JavaScript (ES6+).
+
+Database: MySQL / Hibernate ORM.
+
+Security: CORS configuration and session-based logic.
+
+🚀 Technical Highlights (The "Hard Parts")
+- DTO Pattern: Implemented Data Transfer Objects to decouple the database schema from the API response, enhancing security and performance.
+
+- Custom Global Exception Handler: Built a @RestControllerAdvice to intercept RuntimeExceptions and transform them into structured JSON for the frontend.
+
+- Template Literals & Async/Await: Leveraged modern JavaScript for clean, readable asynchronous API calls.
+
+📸 Preview
+
+<img width="1345" height="564" alt="image" src="https://github.com/user-attachments/assets/376bf458-f2b8-4710-905c-3b48a0e8547c" />
+<img width="1363" height="561" alt="image" src="https://github.com/user-attachments/assets/9961874b-8e81-4e2c-aaff-31647bb710a5" />
 
 
-* **Seat Management:** Automated tracking of VIP and Regular seat availability with real-time seat-limit validation.
-* **Global Error Handling:** Implemented `@ControllerAdvice` to provide clean, consistent JSON error responses (avoiding messy stack traces for the end-user).
-* **Data Integrity:** Utilized `@Transactional` to ensure that ticket creation and seat count updates happen as a single atomic operation.
+⚙️ Setup & Installation
+Backend:
 
-## 🛠 Technical Highlights
+Navigate to /MJCinema.
 
-* **DTO Pattern:** Used Data Transfer Objects to decouple the database entities from the API layer, improving security and performance.
-* **Custom JPQL Queries:** Optimized database interactions using constructor expressions in `JpaRepository` to fetch only the data needed for the UI.
-* **N-Tier Architecture:** Organized the codebase into Controller, Service, Repository, and Entity layers for maximum maintainability and clear separation of concerns.
+Configure your application.properties with your MySQL credentials.
 
-## 🧠 Learning Outcomes & Personal Growth
+Run ./mvnw spring-boot:run.
 
-This project represents a significant milestone in my journey as a self-taught developer. Beyond my formal 2nd-year IT curriculum, I took the initiative to study and implement several advanced concepts independently:
+Frontend:
 
-* **Self-Taught OOP Principles:** While I learned the basics in school, I independently mastered the application of **Inheritance, Encapsulation, and Polymorphism** within a production-ready framework.
-* **Deep Dive into Spring Security:** I self-studied the internal workings of `SecurityFilterChain` and `UserDetailsService` to implement a custom authentication flow.
-* **The DTO Pattern:** I researched and implemented DTOs to solve the problem of exposing sensitive database structures to the API layer—a concept typically not taught until senior-level courses.
-* **Problem Solving & Debugging:** Encountered and resolved real-world database constraints, such as **MySQL Safe Update Mode**, by researching documentation and implementing session-based SQL toggles.
-* **Autonomous Learning:** Almost 90% of the architecture and logic in this project was self-studied through technical documentation and trial-and-error, proving my ability to adapt to new technologies rapidly.
+Open index.html via Live Server.
 
-## 🚦 API Endpoints (Samples)
-
-### User & Booking Endpoints
-
-| Method | Endpoint | Description | Access |
-| --- | --- | --- | --- |
-| `POST` | `/user/register` | Register a new account | Public |
-| `POST` | `/ticket/book` | Book a movie ticket | USER |
-| `GET` | `/ticket/booked` | View current user's tickets | USER |
-| `DELETE` | `/ticket/cancel/{code}` | Cancel a specific ticket | USER |
-
-### Admin Endpoints
-
-| Method | Endpoint | Description | Access |
-| --- | --- | --- | --- |
-| `POST` | `/admin/addMovie` | Add a new movie listing | ADMIN |
-| `GET` | `/admin/listMovie` | View all movies in database | ADMIN |
-| `DELETE` | `/admin/removeMovie/{id}` | Remove a movie and its tickets | ADMIN |
-
-## 🧪 How to Run
-
-1. **Clone the repository.**
-2. **Configure MySQL:** Update `src/main/resources/application.properties` with your DB username and password.
-3. **Run the App:** Execute `./mvnw spring-boot:run` in your terminal.
-4. **Test:** Use Postman or cURL to interact with the endpoints at `http://localhost:8080`.
-
+Ensure the baseUrl in mjcinema.js matches your backend port (default: 8080).
