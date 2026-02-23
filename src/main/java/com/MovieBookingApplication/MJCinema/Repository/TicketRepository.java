@@ -1,9 +1,7 @@
 package com.MovieBookingApplication.MJCinema.Repository;
 
 import com.MovieBookingApplication.MJCinema.DTO.MovieTicketsDTO;
-import com.MovieBookingApplication.MJCinema.DTO.ShowingSchedResponse;
 import com.MovieBookingApplication.MJCinema.Entity.Tickets;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -18,7 +16,7 @@ public interface TicketRepository extends JpaRepository<Tickets, Integer> {
 
     @Query("SELECT new com.MovieBookingApplication.MJCinema.DTO.MovieTicketsDTO(" +
             "t.user.username, t.schedule.movie.title, t.schedule.cinema.location, t.seat.seatNumber, t.seat.seatCategory," +
-            "t.ticketCode, t.schedule.showDate, t.schedule.startTime) " +
+            "t.ticketCode, t.schedule.showDate, t.schedule.startTime, t.ticketStatus) " +
             "FROM Tickets t "+
             "WHERE t.schedule.movie.movieId = :movieId" //the colon is like a substitute
     )
@@ -30,7 +28,7 @@ public interface TicketRepository extends JpaRepository<Tickets, Integer> {
 
     @Query("SELECT new com.MovieBookingApplication.MJCinema.DTO.MovieTicketsDTO(" +
             "t.user.username, t.schedule.movie.title, t.schedule.cinema.location, t.seat.seatNumber, t.seat.seatCategory," +
-            "t.ticketCode, t.schedule.showDate, t.schedule.startTime) " +
+            "t.ticketCode, t.schedule.showDate, t.schedule.startTime, t.ticketStatus) " +
             "FROM Tickets t "+
             "WHERE t.user.username = :username" //the colon is like a substitute
     )
@@ -41,7 +39,14 @@ public interface TicketRepository extends JpaRepository<Tickets, Integer> {
 
     List<Tickets> findByScheduleScheduleId(Integer scheduleId);
 
-    List<MovieTicketsDTO> findByUserUserId(Integer userId);
+
+    @Query("SELECT new com.MovieBookingApplication.MJCinema.DTO.MovieTicketsDTO(" +
+            "t.user.username, t.schedule.movie.title, t.schedule.cinema.location, t.seat.seatNumber, t.seat.seatCategory," +
+            "t.ticketCode, t.schedule.showDate, t.schedule.startTime, t.ticketStatus) " +
+            "FROM Tickets t "+
+            "WHERE t.user.userId = :userId" //the colon is like a substitute
+    )
+    List<MovieTicketsDTO> findTicketByUserUserId(Integer userId);
 
 
 }

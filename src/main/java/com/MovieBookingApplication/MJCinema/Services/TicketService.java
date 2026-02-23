@@ -6,15 +6,12 @@ import com.MovieBookingApplication.MJCinema.Entity.*;
 import com.MovieBookingApplication.MJCinema.Repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -140,7 +137,7 @@ public class TicketService {
         return "Ticket Deleted Successfully!";
     }
     public List<MovieTicketsDTO> showMyTickets(Integer userId){
-        List<MovieTicketsDTO> showMytickets = ticketRepository.findByUserUserId(userId);
+        List<MovieTicketsDTO> showMytickets = ticketRepository.findTicketByUserUserId(userId);
 
         return showMytickets;
 

@@ -1,6 +1,7 @@
 package com.MovieBookingApplication.MJCinema.DTO;
 
 import com.MovieBookingApplication.MJCinema.Entity.SeatCategory;
+import com.MovieBookingApplication.MJCinema.Entity.TicketStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -9,29 +10,48 @@ import java.time.LocalTime;
 public class MovieTicketsDTO {
     private String username;
     private String title;
-    private String cinema;
+    private String location;
     private String seatNumber;
     private SeatCategory seatCategory;
     private String ticketCode;
     private LocalDate showDate;
     private LocalTime startTime;
+    private TicketStatus ticketStatus;
 
     public MovieTicketsDTO(String username,
                            String title,
-                           String cinema,
+                           String location,
                            String seatNumber,
                            SeatCategory seatCategory,
                            String ticketCode,
                            LocalDate showDate,
-                           LocalTime startTime) {
+                           LocalTime startTime,
+                           TicketStatus ticketStatus) {
         this.username = username;
         this.title = title;
-        this.cinema = cinema;
+        this.location = location;
         this.seatNumber = seatNumber;
         this.seatCategory = seatCategory;
         this.ticketCode = ticketCode;
         this.showDate = showDate;
         this.startTime = startTime;
+        this.ticketStatus = ticketStatus;
+    }
+
+    public String getSeatNumber() {
+        return seatNumber;
+    }
+
+    public void setSeatNumber(String seatNumber) {
+        this.seatNumber = seatNumber;
+    }
+
+    public TicketStatus getTicketStatus() {
+        return ticketStatus;
+    }
+
+    public void setTicketStatus(TicketStatus ticketStatus) {
+        this.ticketStatus = ticketStatus;
     }
 
     public String getUsername() {
@@ -50,12 +70,12 @@ public class MovieTicketsDTO {
         this.title = title;
     }
 
-    public String getCinema() {
-        return cinema;
+    public String getLocation() {
+        return location;
     }
 
-    public void setCinema(String cinema) {
-        this.cinema = cinema;
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public String getSeat() {

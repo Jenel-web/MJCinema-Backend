@@ -52,7 +52,7 @@ public class TicketsController {
     }
 
     @GetMapping("/mytickets")
-    public ResponseEntity<List<MovieTicketsDTO>> showMyTickets(@RequestParam Integer UserId){
+    public ResponseEntity<List<MovieTicketsDTO>> showMyTickets(@RequestParam Integer userId){
         List<MovieTicketsDTO> myTickets = ticketService.showMyTickets(userId);
 
         return ResponseEntity.ok(myTickets);

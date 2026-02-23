@@ -4,6 +4,6 @@ public enum TicketStatus {
     BOOKED,
     CANCELLED,
     REFUNDED,
-    USED,
+    COMPLETED,
     EXPIRED
 }

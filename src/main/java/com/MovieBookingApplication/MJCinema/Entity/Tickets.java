@@ -36,6 +36,7 @@ public class Tickets {
     @Column(name = "booked_time", nullable = false)
     private LocalDateTime bookedTime;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "ticket_status", nullable = true)
     public TicketStatus ticketStatus;
 
