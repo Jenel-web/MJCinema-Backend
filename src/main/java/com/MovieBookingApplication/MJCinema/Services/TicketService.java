@@ -20,6 +20,7 @@ import java.util.UUID;
 @Service
 public class TicketService {
 
+
     @Autowired
     private TicketRepository ticketRepository;
 
@@ -138,4 +139,11 @@ public class TicketService {
         userRepository.save(user);
         return "Ticket Deleted Successfully!";
     }
+    public List<MovieTicketsDTO> showMyTickets(Integer userId){
+        List<MovieTicketsDTO> showMytickets = ticketRepository.findByUserUserId(userId);
+
+        return showMytickets;
+
+    }
+
 }

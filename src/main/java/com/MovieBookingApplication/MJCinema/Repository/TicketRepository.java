@@ -41,6 +41,7 @@ public interface TicketRepository extends JpaRepository<Tickets, Integer> {
 
     List<Tickets> findByScheduleScheduleId(Integer scheduleId);
 
+    List<MovieTicketsDTO> findByUserUserId(Integer userId);
 
 
 }
