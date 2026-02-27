@@ -101,6 +101,7 @@ public class TicketService {
         ticketDTO.setStatus("SUCCESS");
         ticketDTO.setShowDate(ticket.getSchedule().getShowDate());
         ticketDTO.setShowTime(ticket.getSchedule().getStartTime());
+        ticket.setTicketStatus(TicketStatus.BOOKED);
 
         return ticketDTO;
 
