@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -138,10 +140,26 @@ public class TicketService {
         return "Ticket Deleted Successfully!";
     }
     public List<MovieTicketsDTO> showMyTickets(Integer userId){
+        updateTicketStatus(); //updates the status first before showing the tickets
         List<MovieTicketsDTO> showMytickets = ticketRepository.findTicketByUserUserId(userId);
 
         return showMytickets;
 
     }
+    public void updateTicketStatus(){
+        List<Tickets> activeTickets = ticketRepository.findByTicketStatus(TicketStatus.BOOKED);
+        List<Tickets> completedTickets = new ArrayList<>();
+        LocalDate now = LocalDate.now();
+        LocalTime timeNow = LocalTime.now();
 
+        for(Tickets t: activeTickets){
+            if(t.getSchedule().getShowDate().isBefore(now) || (t.getSchedule().getShowDate())
+            == now && t.getSchedule().getEndTime().isBefore(timeNow)){
+                t.setTicketStatus(TicketStatus.COMPLETED);
+                completedTickets.add(t);
+            }
+        }
+
+        ticketRepository.saveAll(completedTickets);
+    }
 }

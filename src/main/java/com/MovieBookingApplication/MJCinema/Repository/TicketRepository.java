@@ -1,6 +1,7 @@
 package com.MovieBookingApplication.MJCinema.Repository;
 
 import com.MovieBookingApplication.MJCinema.DTO.MovieTicketsDTO;
+import com.MovieBookingApplication.MJCinema.Entity.TicketStatus;
 import com.MovieBookingApplication.MJCinema.Entity.Tickets;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -48,5 +49,5 @@ public interface TicketRepository extends JpaRepository<Tickets, Integer> {
     )
     List<MovieTicketsDTO> findTicketByUserUserId(Integer userId);
 
-
+    List<Tickets> findByTicketStatus(TicketStatus ticketStatus);
 }
