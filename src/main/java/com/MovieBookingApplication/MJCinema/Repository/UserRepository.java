@@ -1,8 +1,10 @@
 package com.MovieBookingApplication.MJCinema.Repository;
 
+import com.MovieBookingApplication.MJCinema.DTO.GetUserRequest;
 import com.MovieBookingApplication.MJCinema.Entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.swing.text.html.Option;
 import java.util.List;
@@ -17,4 +19,6 @@ public interface UserRepository extends JpaRepository<Users, Integer> {
     Optional<Users> findByUsernameAndPassword(String username, String password);
 
     boolean existsByUsername(String username);
+
+    GetUserRequest findByUserId(Integer userId);
 }

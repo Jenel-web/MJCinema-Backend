@@ -1,9 +1,6 @@
 package com.MovieBookingApplication.MJCinema.Controllers;
 
-import com.MovieBookingApplication.MJCinema.DTO.ChangePasswordRequest;
-import com.MovieBookingApplication.MJCinema.DTO.MovieTicketsDTO;
-import com.MovieBookingApplication.MJCinema.DTO.RegisterRequest;
-import com.MovieBookingApplication.MJCinema.DTO.UserDTO;
+import com.MovieBookingApplication.MJCinema.DTO.*;
 import com.MovieBookingApplication.MJCinema.Entity.Users;
 import com.MovieBookingApplication.MJCinema.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +21,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/healthy")
-    public ResponseEntity<String> healthy(){
-        return ResponseEntity.ok("healthy");
-    }
 
     @GetMapping
     public String currentUser(Authentication auth){
@@ -92,5 +85,12 @@ public class UserController {
                                                   Authentication auth){
         String result = userService.changePassword(request, currentUser(auth));
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/getUser")
+    public ResponseEntity<GetUserRequest> getUser(@RequestParam Integer userId){
+        GetUserRequest user = userService.getUser(userId);
+
+        return ResponseEntity.ok(user);
     }
 }

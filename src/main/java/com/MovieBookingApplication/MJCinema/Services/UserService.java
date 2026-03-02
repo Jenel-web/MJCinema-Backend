@@ -1,6 +1,7 @@
 package com.MovieBookingApplication.MJCinema.Services;
 
 import com.MovieBookingApplication.MJCinema.DTO.ChangePasswordRequest;
+import com.MovieBookingApplication.MJCinema.DTO.GetUserRequest;
 import com.MovieBookingApplication.MJCinema.DTO.MovieTicketsDTO;
 import com.MovieBookingApplication.MJCinema.Entity.Users;
 import com.MovieBookingApplication.MJCinema.Repository.TicketRepository;
@@ -85,4 +86,9 @@ public class UserService {
         return passwordEncoder.matches(password, user.getPassword());
     }
 
+    public GetUserRequest getUser(Integer userId){
+        GetUserRequest currUser = userRepository.findByUserId(userId);
+
+        return currUser; //returns the details of the current user
+    }
 }
