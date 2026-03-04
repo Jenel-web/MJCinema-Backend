@@ -76,6 +76,7 @@ public class TicketService {
             ticket.setSchedule(schedule);
             ticket.setSeat(seatNumber);
             ticket.setTicketCode("MJ-" + UUID.randomUUID().toString().substring(0, 6));
+            ticket.setTicketStatus(TicketStatus.ACTIVE);
             ticket.setBookedTime(LocalDateTime.now());
             ticketsBooked.add(ticket);
         }
@@ -103,7 +104,7 @@ public class TicketService {
         ticketDTO.setStatus("SUCCESS");
         ticketDTO.setShowDate(ticket.getSchedule().getShowDate());
         ticketDTO.setShowTime(ticket.getSchedule().getStartTime());
-        ticket.setTicketStatus(TicketStatus.BOOKED);
+        ticket.setTicketStatus(TicketStatus.ACTIVE);
 
         return ticketDTO;
 
@@ -147,7 +148,7 @@ public class TicketService {
 
     }
     public void updateTicketStatus(){
-        List<Tickets> activeTickets = ticketRepository.findByTicketStatus(TicketStatus.BOOKED);
+        List<Tickets> activeTickets = ticketRepository.findByTicketStatus(TicketStatus.ACTIVE);
         List<Tickets> completedTickets = new ArrayList<>();
         LocalDate now = LocalDate.now();
         LocalTime timeNow = LocalTime.now();

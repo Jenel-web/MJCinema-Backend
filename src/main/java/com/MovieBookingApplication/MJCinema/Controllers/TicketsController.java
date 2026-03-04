@@ -4,15 +4,18 @@ import com.MovieBookingApplication.MJCinema.DTO.*;
 import com.MovieBookingApplication.MJCinema.Services.TicketService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
 
-@CrossOrigin(origins = "http://127.0.0.1:5500", allowCredentials = "true")//can be used when credentials are included.
+@CrossOrigin(origins = "http://127.0.0.1:5500", allowCredentials = "true", allowedHeaders = "*")//can be used when credentials are included.
 @RestController
 @RequestMapping("/ticket")
 public class TicketsController {
@@ -21,7 +24,11 @@ public class TicketsController {
     private TicketService ticketService;
 
     @GetMapping("/user")
-    public String currentUser(Authentication auth){
+    public String currentUser(){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not logged in");
+        }
         String name = auth.getName();
 
         return name;
@@ -46,7 +53,12 @@ public class TicketsController {
 
     @PatchMapping("/cancel")
     public ResponseEntity<String> cancelTicket(@RequestBody CancelTicketRequest request, Authentication auth){
-        String message = ticketService.cancelTicket(request.getTicketCode(), currentUser(auth));
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You must be logged in to cancel tickets.");
+        }
+
+        // 2. Pass the username directly to the service
+        String message = ticketService.cancelTicket(request.getTicketCode(), auth.getName()); //passes the name from auth
 
         return ResponseEntity.ok(message);
     }
