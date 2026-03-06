@@ -56,15 +56,12 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity <Map<String, String>> loginUSer(@RequestBody UserDTO user){
-      Users users = userService.loginUser(user.getUsername(), user.getPassword());
-        Map<String, String> login = new HashMap<>();
-        if(users != null){
-            login.put("username", users.getUsername());
-            login.put("userId", String.valueOf(users.getUserId()));
-            login.put("message", "Welcome back" + user.getUsername() +
-                    "!");
-            return ResponseEntity.ok(login);
+    public ResponseEntity <Map<String, Object>> loginUSer(@RequestBody UserDTO user){
+      Map<String, Object> output = userService.loginUser(user);
+        Map<String, Object> login = new HashMap<>();
+
+        if(output != null){
+            return ResponseEntity.ok(output);
         }
         else{
             login.put("message", "Invalid username or password");

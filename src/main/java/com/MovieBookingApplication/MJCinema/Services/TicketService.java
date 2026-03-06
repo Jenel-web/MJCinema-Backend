@@ -6,6 +6,7 @@ import com.MovieBookingApplication.MJCinema.Entity.*;
 import com.MovieBookingApplication.MJCinema.Repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -122,7 +123,6 @@ public class TicketService {
         //find if the ticket owner of the ticket is the same and cancel if yes.
         Tickets ticket = ticketRepository.findByTicketCode(ticketCode)
                 .orElseThrow(() -> new RuntimeException("Ticket not found."));
-
 
         if(!ticket.getUser().getUsername().equals(username)){
             throw new RuntimeException("Ticket Cancellation Failed.");

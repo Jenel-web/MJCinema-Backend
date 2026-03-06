@@ -3,15 +3,22 @@ package com.MovieBookingApplication.MJCinema.Services;
 import com.MovieBookingApplication.MJCinema.DTO.ChangePasswordRequest;
 import com.MovieBookingApplication.MJCinema.DTO.GetUserRequest;
 import com.MovieBookingApplication.MJCinema.DTO.MovieTicketsDTO;
+import com.MovieBookingApplication.MJCinema.DTO.UserDTO;
 import com.MovieBookingApplication.MJCinema.Entity.Users;
 import com.MovieBookingApplication.MJCinema.Repository.TicketRepository;
 import com.MovieBookingApplication.MJCinema.Repository.UserRepository;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -22,13 +29,16 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
+    private final AuthenticationManager authenticationManager;
     @Autowired
     private TicketRepository ticketRepository;
 
-    public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository){
+    @Autowired JWTService jwtService;
+    public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository
+                        ,AuthenticationManager authenticationManager){
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
+        this.authenticationManager = authenticationManager;
     }
 
     public boolean registerUser(String username, String password, String confirm){
@@ -47,18 +57,22 @@ public class UserService {
         }
     }
 
-    public Users loginUser(String username, String password){
-        //find in repo
-        Users user = userRepository.findByUsername(username).orElse(null);
-        if(user != null && passwordEncoder.matches(password, user.getPassword())){
-            return user;
-        }
+    public Map<String, Object> loginUser(UserDTO user) {
+        Authentication authentication =
+                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+        Map<String, Object> output = new HashMap<>();
+        if (authentication.isAuthenticated()) {
+            Users userLoggedIn = userRepository.findByUsername(user.getUsername()).orElseThrow(
+                    () -> new RuntimeException("User not found."));
+            String token =  jwtService.generateToken(user.getUsername());
+                output.put("userId", userLoggedIn.getUserId());
+                output.put("username", userLoggedIn.getUsername());
+                output.put("jwtToken", token);
 
-      else{
-          return null;
+                return output;
         }
+        return null;
     }
-
     public List<MovieTicketsDTO> showTickets(String username){
         return ticketRepository.FindTicketsByUserUsername(username);
     }

@@ -56,9 +56,12 @@ public class TicketsController {
         if (auth == null || !auth.isAuthenticated()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You must be logged in to cancel tickets.");
         }
-
+        if (auth == null) {
+            System.out.println("ERROR: Authentication object is null!");
+            return ResponseEntity.status(401).body("Not Authenticated");
+        }
         // 2. Pass the username directly to the service
-        String message = ticketService.cancelTicket(request.getTicketCode(), auth.getName()); //passes the name from auth
+        String message = ticketService.cancelTicket(request.getTicketCode(), auth.getName() ); //passes the name from auth
 
         return ResponseEntity.ok(message);
     }

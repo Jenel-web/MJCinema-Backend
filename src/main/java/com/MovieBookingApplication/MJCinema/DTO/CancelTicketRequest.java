@@ -6,6 +6,7 @@ public class CancelTicketRequest {
     @NotNull(message = "Ticket Code is required.")
     private String ticketCode;
 
+    public CancelTicketRequest() {}
     public String getTicketCode() {
         return ticketCode;
     }
