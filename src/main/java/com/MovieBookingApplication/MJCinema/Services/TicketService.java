@@ -154,8 +154,7 @@ public class TicketService {
         LocalTime timeNow = LocalTime.now();
 
         for(Tickets t: activeTickets){
-            if(t.getSchedule().getShowDate().isBefore(now) || (t.getSchedule().getShowDate())
-            == now && t.getSchedule().getEndTime().isBefore(timeNow)){
+            if(t.getSchedule().getShowDate().isBefore(now) || (t.getSchedule().getShowDate()).isEqual(now) && t.getSchedule().getEndTime().isBefore(timeNow)){
                 t.setTicketStatus(TicketStatus.COMPLETED);
                 completedTickets.add(t);
             }

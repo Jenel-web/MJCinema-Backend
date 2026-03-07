@@ -221,7 +221,7 @@ public class    ScheduleService {
 
     @Transactional
     public String removeSchedule(Integer scheduleId){
-        //find the schedule using the schedule id
+        //find the schedule  using the schedule id
         Schedule schedule = scheduleRepository.findById(scheduleId).
                 orElseThrow(()-> new RuntimeException("Schedule not found."));
 
