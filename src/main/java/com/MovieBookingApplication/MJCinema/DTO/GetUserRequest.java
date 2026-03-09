@@ -4,6 +4,14 @@ public class GetUserRequest {
     private String username;
     private Double balance;
 
+    public GetUserRequest() {
+    }
+
+    public GetUserRequest(String username, Double balance) {
+        this.username = username;
+        this.balance = balance;
+    }
+
     public String getUsername() {
         return username;
     }

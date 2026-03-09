@@ -85,9 +85,13 @@ public class UserController {
     }
 
     @GetMapping("/getUser")
-    public ResponseEntity<GetUserRequest> getUser(@RequestParam Integer userId){
+    public ResponseEntity<Map<String, Object>> getUser(@RequestParam Integer userId){
         GetUserRequest user = userService.getUser(userId);
+        Map<String, Object> userInfo = new HashMap<>(); //returns an object so
+        //it can map to any reference type variable/.
 
-        return ResponseEntity.ok(user);
+        userInfo.put("username", user.getUsername());
+        userInfo.put("balance", user.getBalance());
+        return ResponseEntity.ok(userInfo);
     }
 }
