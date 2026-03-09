@@ -68,6 +68,7 @@ public class UserService {
                 output.put("userId", userLoggedIn.getUserId());
                 output.put("username", userLoggedIn.getUsername());
                 output.put("jwtToken", token);
+                output.put("role", userLoggedIn.getRole());
 
                 return output;
         }

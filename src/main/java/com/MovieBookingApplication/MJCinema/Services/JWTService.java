@@ -15,7 +15,7 @@ import java.util.function.Function;
 public class JWTService {
 
     // Use a strong secret key (at least 256-bit)
-    private static final String SECRET = "YourSuperSecretKeyThatIsVeryLongAndSecure12345678";
+    private static final String SECRET = "YTM0ZGUyOTY0NTJlYjY4ZDRmOGU3YjI1M2Q2ZTU4M2I1Yjc4MzBkZTM0NTY3ODkwYWJjZGVmMTIzNDU2Nzg5MA==";
 
     public String generateToken(String username) {
         return Jwts.builder()
