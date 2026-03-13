@@ -50,4 +50,8 @@ public interface TicketRepository extends JpaRepository<Tickets, Integer> {
     List<MovieTicketsDTO> findTicketByUserUserId(Integer userId);
 
     List<Tickets> findByTicketStatus(TicketStatus ticketStatus);
+
+
+    List<Tickets> findByUsername(String username);
+
 }

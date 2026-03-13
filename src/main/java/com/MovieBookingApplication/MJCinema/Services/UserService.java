@@ -1,10 +1,11 @@
 package com.MovieBookingApplication.MJCinema.Services;
 
-import com.MovieBookingApplication.MJCinema.DTO.ChangePasswordRequest;
-import com.MovieBookingApplication.MJCinema.DTO.GetUserRequest;
-import com.MovieBookingApplication.MJCinema.DTO.MovieTicketsDTO;
-import com.MovieBookingApplication.MJCinema.DTO.UserDTO;
+import com.MovieBookingApplication.MJCinema.DTO.*;
+import com.MovieBookingApplication.MJCinema.Entity.SeatPrice;
+import com.MovieBookingApplication.MJCinema.Entity.TicketStatus;
+import com.MovieBookingApplication.MJCinema.Entity.Tickets;
 import com.MovieBookingApplication.MJCinema.Entity.Users;
+import com.MovieBookingApplication.MJCinema.Repository.SeatPriceRepository;
 import com.MovieBookingApplication.MJCinema.Repository.TicketRepository;
 import com.MovieBookingApplication.MJCinema.Repository.UserRepository;
 import org.apache.catalina.User;
@@ -16,11 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
+import java.util.*;
 
 
 @Service
@@ -33,6 +30,8 @@ public class UserService {
     @Autowired
     private TicketRepository ticketRepository;
 
+    @Autowired
+    SeatPriceRepository seatPriceRepository;
     @Autowired JWTService jwtService;
     public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository
                         ,AuthenticationManager authenticationManager){
@@ -105,5 +104,36 @@ public class UserService {
         GetUserRequest currUser = userRepository.findByUserId(userId);
 
         return currUser; //returns the details of the current user
+    }
+
+    public List<ShowUsersResponse> showUsers(){
+        List<Users> allUsers = userRepository.findAll();
+        List<ShowUsersResponse> usersResponses = new ArrayList<>();
+        for(Users u: allUsers){
+            ShowUsersResponse user = new ShowUsersResponse();
+            user.setUsername(u.getUsername());
+            user.setBalance(u.getBalance());
+
+            List<Tickets> userTickets = ticketRepository.findByUsername(u.getUsername());
+            Integer userTicketsBooked = 0;
+            Double userTotalSpent = 0.0;
+            for(Tickets t: userTickets){
+                if(!t.getTicketStatus().equals(TicketStatus.CANCELLED)){
+                    userTicketsBooked++;
+                    SeatPrice price = seatPriceRepository.findBySeatCategoryAndScheduleScheduleId(t.getSeat().getSeatCategory(),
+                            t.getSchedule().getScheduleId()).orElseThrow(() -> new RuntimeException("Price not found."));
+
+                    Double ticketPrice = price.getPrice();
+                    userTotalSpent+=ticketPrice;
+                }
+            }
+            user.setTicketsBooked(userTicketsBooked);
+            user.setTotalSpent(userTotalSpent);
+            usersResponses.add(user);
+
+
+
+        }
+        return usersResponses;
     }
 }
