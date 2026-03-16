@@ -41,4 +41,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
 
     @Query("SELECT s FROM Schedule s WHERE s.movie.movieId = :movieId AND (s.showDate > :today OR (s.showDate = :today AND s.startTime > :time))")
     List<Schedule> findByMovieId(Integer movieId, LocalDate today, LocalTime time);
+
+    @Query("SELECT s FROM Schedule s WHERE s.status = com.MovieBookingApplication.MJCinema.Entity.ScheduleStatus.ACTIVE")
+    List<Schedule> ShowActiveSchedules();
 }

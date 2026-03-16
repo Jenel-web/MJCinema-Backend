@@ -36,6 +36,9 @@ public class    ScheduleService {
     private MovieRepository movieRepository;
 
     @Autowired
+    private SeatService seatService;
+
+    @Autowired
     private CinemaRepository cinemaRepository;
 
     @Autowired
@@ -94,7 +97,6 @@ public class    ScheduleService {
         // now showing list
         List<Movie> comingSoonMovies = movieRepository.findByStatus(MovieStatus.COMING_SOON);
         List<ComingSoonResponse> comingSoonResponses = new ArrayList<>();
-        ;
         LocalDate now = LocalDate.now();
         LocalTime timeNow = LocalTime.now();
         for(Movie m: comingSoonMovies){
@@ -282,5 +284,22 @@ public class    ScheduleService {
         List<SeatPrice> schedPrices = seatPriceRepository.findByScheduleScheduleId(scheduleId);
 
         return schedPrices;
+    }
+
+    public List<ShowSeatStatsResponse> showSeatStats(){
+        List<Schedule> activeSchedules = scheduleRepository.ShowActiveSchedules();
+        List<ShowSeatStatsResponse> seatStats = new ArrayList<>();
+
+        for(Schedule s: activeSchedules){
+            List<String> activeSeats = seatService.findOccupiedSeats(s.getScheduleId());
+
+            Integer seatsLength = activeSeats.size();
+            Integer availableSeats = s.getCinema().getTotalSeats() - seatsLength;
+            Double percentage = ((double) seatsLength/ s.getCinema().getTotalSeats()) * 100; //typecast
+            seatStats.add(new ShowSeatStatsResponse(s.getCinema().getCinemaName(),
+                    s.getShowDate(),s.getStatus(),
+                    seatsLength, availableSeats, percentage, s.getSlot()));
+        }
+        return seatStats;
     }
 }

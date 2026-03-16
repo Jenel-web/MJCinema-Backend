@@ -69,4 +69,6 @@ public interface TicketRepository extends JpaRepository<Tickets, Integer> {
             "WHERE t.ticketStatus = com.MovieBookingApplication.MJCinema.Entity.TicketStatus.ACTIVE" //the colon is like a substitute
     )
     List<ShowBookingsResponse> showBookings();
+
+
 }

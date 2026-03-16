@@ -79,6 +79,10 @@ public class ScheduleController {
         return ResponseEntity.ok(seatPrices);
     }
 
-   // @GetMapping("/seatStats")
-    //public ResponseEntity<List<>>
+    @GetMapping("/seatStats")
+    public ResponseEntity<List<ShowSeatStatsResponse>> showSeatStats(){
+        List<ShowSeatStatsResponse> seatStats = scheduleService.showSeatStats();
+
+        return ResponseEntity.ok(seatStats);
+    }
 }
