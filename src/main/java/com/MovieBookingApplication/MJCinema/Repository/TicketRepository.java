@@ -52,6 +52,6 @@ public interface TicketRepository extends JpaRepository<Tickets, Integer> {
     List<Tickets> findByTicketStatus(TicketStatus ticketStatus);
 
 
-    List<Tickets> findByUsername(String username);
+    List<Tickets> findByUserUsername(String username);
 
 }

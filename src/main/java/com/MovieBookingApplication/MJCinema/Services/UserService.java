@@ -114,7 +114,7 @@ public class UserService {
             user.setUsername(u.getUsername());
             user.setBalance(u.getBalance());
 
-            List<Tickets> userTickets = ticketRepository.findByUsername(u.getUsername());
+            List<Tickets> userTickets = ticketRepository.findByUserUsername(u.getUsername());
             Integer userTicketsBooked = 0;
             Double userTotalSpent = 0.0;
             for(Tickets t: userTickets){

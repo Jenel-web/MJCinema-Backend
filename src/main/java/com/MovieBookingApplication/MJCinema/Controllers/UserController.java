@@ -97,7 +97,9 @@ public class UserController {
     }
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/showUsers")
-    public ResponseEntity<?> showUsers(){
+    public ResponseEntity<List<ShowUsersResponse>> showUsers(){
+        List<ShowUsersResponse> users = userService.showUsers();
 
+        return ResponseEntity.ok(users);
     }
 }
