@@ -14,8 +14,17 @@ public class Cinema {
     private String cinemaName;
     private Integer totalRows;
     private Integer totalColumns;
+    private Integer totalSeats;
 
     private String seatLayout;
+
+    public Integer getTotalSeats() {
+        return totalSeats;
+    }
+
+    public void setTotalSeats(Integer totalSeats) {
+        this.totalSeats = totalSeats;
+    }
 
     public String getCinemaName() {
         return cinemaName;

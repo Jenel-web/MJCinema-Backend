@@ -19,4 +19,5 @@ public interface SeatRespository extends JpaRepository<Seat, Integer> {
     List<Seat> findByScheduleId(Integer scheduleId);
 
 
+
 }

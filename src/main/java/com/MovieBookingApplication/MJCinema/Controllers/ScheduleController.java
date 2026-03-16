@@ -79,4 +79,6 @@ public class ScheduleController {
         return ResponseEntity.ok(seatPrices);
     }
 
+   // @GetMapping("/seatStats")
+    //public ResponseEntity<List<>>
 }
