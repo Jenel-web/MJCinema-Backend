@@ -54,4 +54,10 @@ public interface TicketRepository extends JpaRepository<Tickets, Integer> {
 
     List<Tickets> findByUserUsername(String username);
 
+    @Query("SELECT COALESCE(SUM(sp.price), 0.0) " +
+            "FROM Tickets t " +
+            "JOIN SeatPrice sp ON sp.seatCategory = t.seat.seatCategory " +
+            "AND sp.schedule = t.schedule " +
+            "WHERE t.ticketStatus != com.MovieBookingApplication.MJCinema.Entity.TicketStatus.CANCELLED")
+    Double showTotalSales(); //takes the sum of all tickets.
 }

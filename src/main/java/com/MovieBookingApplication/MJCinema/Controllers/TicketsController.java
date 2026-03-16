@@ -73,4 +73,9 @@ public class TicketsController {
         return ResponseEntity.ok(myTickets);
     }
 
-}
+    @GetMapping("/totalSales")
+    public ResponseEntity<Double> showTotalSales(){
+        Double totalSales = ticketService.showTotalSales();
+
+        return ResponseEntity.ok(totalSales);
+    }}

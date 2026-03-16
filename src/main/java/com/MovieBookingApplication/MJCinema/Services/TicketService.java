@@ -162,4 +162,10 @@ public class TicketService {
 
         ticketRepository.saveAll(completedTickets);
     }
+
+    public Double showTotalSales(){
+        Double totalSales = ticketRepository.showTotalSales();
+
+        return totalSales;
+    }
 }
