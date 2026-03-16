@@ -1,6 +1,7 @@
 package com.MovieBookingApplication.MJCinema.Repository;
 
 import com.MovieBookingApplication.MJCinema.DTO.MovieTicketsDTO;
+import com.MovieBookingApplication.MJCinema.DTO.ShowBookingsResponse;
 import com.MovieBookingApplication.MJCinema.Entity.TicketStatus;
 import com.MovieBookingApplication.MJCinema.Entity.Tickets;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -60,4 +61,12 @@ public interface TicketRepository extends JpaRepository<Tickets, Integer> {
             "AND sp.schedule = t.schedule " +
             "WHERE t.ticketStatus != com.MovieBookingApplication.MJCinema.Entity.TicketStatus.CANCELLED")
     Double showTotalSales(); //takes the sum of all tickets.
+
+    @Query("SELECT new com.MovieBookingApplication.MJCinema.DTO.ShowBookingsResponse(" +
+            "t.ticketCode, t.user.username, t.seat.seatNumber, t.schedule.showDate, t.schedule.cinema.cinemaName," +
+            "t.schedule.startTime) " +
+            "FROM Tickets t "+
+            "WHERE t.ticketStatus = com.MovieBookingApplication.MJCinema.Entity.TicketStatus.ACTIVE" //the colon is like a substitute
+    )
+    List<ShowBookingsResponse> showBookings();
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
 
 
 @CrossOrigin(origins = "http://127.0.0.1:5500", allowCredentials = "true", allowedHeaders = "*")//can be used when credentials are included.
@@ -78,4 +79,12 @@ public class TicketsController {
         Double totalSales = ticketService.showTotalSales();
 
         return ResponseEntity.ok(totalSales);
-    }}
+    }
+
+    @GetMapping("/showBookings")
+    public ResponseEntity<List<ShowBookingsResponse>> showBookings(){
+        List<ShowBookingsResponse> allBookingsActive = ticketService.showBookings();
+
+        return ResponseEntity.ok(allBookingsActive);
+    }
+}

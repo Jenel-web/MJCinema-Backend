@@ -1,6 +1,7 @@
 package com.MovieBookingApplication.MJCinema.Services;
 
 import com.MovieBookingApplication.MJCinema.DTO.MovieTicketsDTO;
+import com.MovieBookingApplication.MJCinema.DTO.ShowBookingsResponse;
 import com.MovieBookingApplication.MJCinema.DTO.TicketDTO;
 import com.MovieBookingApplication.MJCinema.Entity.*;
 import com.MovieBookingApplication.MJCinema.Repository.*;
@@ -167,5 +168,11 @@ public class TicketService {
         Double totalSales = ticketRepository.showTotalSales();
 
         return totalSales;
+    }
+
+    public List<ShowBookingsResponse> showBookings(){
+        List<ShowBookingsResponse> allBookings = ticketRepository.showBookings();
+
+        return allBookings;
     }
 }
