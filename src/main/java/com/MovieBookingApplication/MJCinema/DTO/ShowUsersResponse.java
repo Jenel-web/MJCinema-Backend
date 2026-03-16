@@ -3,9 +3,15 @@ package com.MovieBookingApplication.MJCinema.DTO;
 public class ShowUsersResponse {
     private String username;
     private Double balance;
-    private Integer ticketsBooked;
+    private Long ticketsBooked;
     private Double totalSpent;
 
+    public ShowUsersResponse(String username, Double balance, Long ticketsBooked, Double totalSpent) {
+        this.username = username;
+        this.balance = balance;
+        this.ticketsBooked = ticketsBooked;
+        this.totalSpent = (totalSpent != null) ? totalSpent : 0.0;
+    }
     public String getUsername() {
         return username;
     }
@@ -22,11 +28,11 @@ public class ShowUsersResponse {
         this.balance = balance;
     }
 
-    public Integer getTicketsBooked() {
+    public Long getTicketsBooked() {
         return ticketsBooked;
     }
 
-    public void setTicketsBooked(Integer ticketsBooked) {
+    public void setTicketsBooked(Long ticketsBooked) {
         this.ticketsBooked = ticketsBooked;
     }
 

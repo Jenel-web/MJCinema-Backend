@@ -108,32 +108,7 @@ public class UserService {
 
     public List<ShowUsersResponse> showUsers(){
         List<Users> allUsers = userRepository.findAll();
-        List<ShowUsersResponse> usersResponses = new ArrayList<>();
-        for(Users u: allUsers){
-            ShowUsersResponse user = new ShowUsersResponse();
-            user.setUsername(u.getUsername());
-            user.setBalance(u.getBalance());
-
-            List<Tickets> userTickets = ticketRepository.findByUserUsername(u.getUsername());
-            Integer userTicketsBooked = 0;
-            Double userTotalSpent = 0.0;
-            for(Tickets t: userTickets){
-                if(!t.getTicketStatus().equals(TicketStatus.CANCELLED)){
-                    userTicketsBooked++;
-                    SeatPrice price = seatPriceRepository.findBySeatCategoryAndScheduleScheduleId(t.getSeat().getSeatCategory(),
-                            t.getSchedule().getScheduleId()).orElseThrow(() -> new RuntimeException("Price not found."));
-
-                    Double ticketPrice = price.getPrice();
-                    userTotalSpent+=ticketPrice;
-                }
-            }
-            user.setTicketsBooked(userTicketsBooked);
-            user.setTotalSpent(userTotalSpent);
-            usersResponses.add(user);
-
-
-
-        }
+        List<ShowUsersResponse> usersResponses = userRepository.findAllUsers();
         return usersResponses;
     }
 }
