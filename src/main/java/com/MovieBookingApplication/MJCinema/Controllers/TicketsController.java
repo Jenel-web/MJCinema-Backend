@@ -91,4 +91,11 @@ public class TicketsController {
 
         return ResponseEntity.ok(allBookingsActive);
     }
+
+    @GetMapping("/showTotalBookings")
+    public ResponseEntity<Integer> showTotalBookings(){
+        Integer total = ticketService.showTotalBookings();
+
+        return ResponseEntity.ok(total);
+    }
 }

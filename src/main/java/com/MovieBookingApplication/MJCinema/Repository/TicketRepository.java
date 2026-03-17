@@ -82,4 +82,9 @@ public interface TicketRepository extends JpaRepository<Tickets, Integer> {
             "WHERE t.ticketCode = :seatCode" //the colon is like a substitute
     )
     String findSeatNumberByTicketCode(String seatCode);
+
+    @Query("SELECT COUNT(t) " +
+            "FROM Tickets t " +
+            "WHERE t.ticketStatus != com.MovieBookingApplication.MJCinema.Entity.TicketStatus.CANCELLED")
+    Integer showTotalBookings();
 }

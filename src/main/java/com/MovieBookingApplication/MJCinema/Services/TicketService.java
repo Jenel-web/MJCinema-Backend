@@ -171,6 +171,10 @@ public class TicketService {
 
         return totalSales;
     }
+    public Integer showTotalBookings(){
+        return ticketRepository.showTotalBookings();
+    }
+
 
     public List<ShowBookingsResponse> showBookings(){
         List<ShowBookingsResponse> allBookings = ticketRepository.showBookings();
