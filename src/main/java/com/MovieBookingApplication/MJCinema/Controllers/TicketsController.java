@@ -15,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 
 @CrossOrigin(origins = "http://127.0.0.1:5500", allowCredentials = "true", allowedHeaders = "*")//can be used when credentials are included.
@@ -105,5 +106,13 @@ public class TicketsController {
         Double revenueToday = ticketService.showRevenueToday();
         // returns the revenue today which is the total tickets booked today.
         return ResponseEntity.ok(revenueToday);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("getSalesTrend")
+    public ResponseEntity<Map<String, Long>> getSalesTrend(){
+        Map<String, Long> result = ticketService.getWeeklySalesTrend();
+
+        return ResponseEntity.ok(result);
     }
 }

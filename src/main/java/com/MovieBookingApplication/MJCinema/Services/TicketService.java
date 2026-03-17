@@ -11,10 +11,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
+import java.time.temporal.TemporalField;
+import java.time.temporal.WeekFields;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class TicketService {
@@ -189,5 +194,18 @@ public class TicketService {
 
     public Double showRevenueToday(){
         return ticketRepository.showRevenueToday();
+    }
+
+    public Map<String, Long> getWeeklySalesTrend() {
+        List<ShowBookingsResponse> allBookings = this.showBookings();
+        TemporalField weekOfYear = WeekFields.of(Locale.getDefault()).weekOfYear();
+
+        return allBookings.stream()
+                .filter(t -> !"CANCELLED".equals(t.getTicketStatus()))
+                .collect(Collectors.groupingBy(
+                        t -> t.getShowDate().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toString(), // Groups as "Week 11", "Week 12", etc.
+                        TreeMap::new,
+                        Collectors.counting()
+                ));
     }
 }
