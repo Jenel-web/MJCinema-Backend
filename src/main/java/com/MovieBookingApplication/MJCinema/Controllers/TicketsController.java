@@ -77,21 +77,21 @@ public class TicketsController {
 
         return ResponseEntity.ok(myTickets);
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/totalSales")
     public ResponseEntity<Double> showTotalSales(){
         Double totalSales = ticketService.showTotalSales();
 
         return ResponseEntity.ok(totalSales);
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/showBookings")
     public ResponseEntity<List<ShowBookingsResponse>> showBookings(){
         List<ShowBookingsResponse> allBookingsActive = ticketService.showBookings();
 
         return ResponseEntity.ok(allBookingsActive);
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/showTotalBookings")
     public ResponseEntity<Integer> showTotalBookings(){
         Integer total = ticketService.showTotalBookings();
@@ -99,6 +99,7 @@ public class TicketsController {
         return ResponseEntity.ok(total);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/showRevenueToday")
     public ResponseEntity<Double> showRevenueToday(){
         Double revenueToday = ticketService.showRevenueToday();

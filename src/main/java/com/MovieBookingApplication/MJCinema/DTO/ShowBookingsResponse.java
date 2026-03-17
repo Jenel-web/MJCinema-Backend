@@ -1,5 +1,7 @@
 package com.MovieBookingApplication.MJCinema.DTO;
 
+import com.MovieBookingApplication.MJCinema.Entity.TicketStatus;
+
 import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -12,20 +14,23 @@ public class ShowBookingsResponse {
     private LocalDate showDate;
     private String cinemaName;
     private LocalTime startTime;
-
+    private TicketStatus ticketStatus;
     public ShowBookingsResponse(String ticketCode,
                                 String username,
                                 String seatNumber,
                                 LocalDate showDate,
                                 String cinemaName,
-                                LocalTime startTime) {
+                                LocalTime startTime,
+                                TicketStatus ticketStatus) {
         this.ticketCode = ticketCode;
         this.username = username;
         this.seatNumber = seatNumber;
         this.showDate = showDate;
         this.cinemaName = cinemaName;
         this.startTime = startTime;
+        this.ticketStatus = ticketStatus;
     }
+
 
     public String getTicketCode() {
         return ticketCode;
@@ -61,6 +66,14 @@ public class ShowBookingsResponse {
 
     public String getCinemaName() {
         return cinemaName;
+    }
+
+    public TicketStatus getTicketStatus() {
+        return ticketStatus;
+    }
+
+    public void setTicketStatus(TicketStatus ticketStatus) {
+        this.ticketStatus = ticketStatus;
     }
 
     public void setCinemaName(String cinemaName) {

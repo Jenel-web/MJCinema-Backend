@@ -71,9 +71,11 @@ public interface TicketRepository extends JpaRepository<Tickets, Integer> {
 
     @Query("SELECT new com.MovieBookingApplication.MJCinema.DTO.ShowBookingsResponse(" +
             "t.ticketCode, t.user.username, t.seat.seatNumber, t.schedule.showDate, t.schedule.cinema.cinemaName," +
-            "t.schedule.startTime) " +
+            "t.schedule.startTime, t.ticketStatus) " +
             "FROM Tickets t "+
-            "WHERE t.ticketStatus = com.MovieBookingApplication.MJCinema.Entity.TicketStatus.ACTIVE" //the colon is like a substitute
+            "JOIN t.schedule s " +
+            "JOIN s.cinema c " +
+            "ORDER by t.bookedTime DESC"//the colon is like a substitute
     )
     List<ShowBookingsResponse> showBookings();
 
