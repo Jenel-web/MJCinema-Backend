@@ -14,6 +14,11 @@ import java.util.Optional;
 @Repository
 public interface TicketRepository extends JpaRepository<Tickets, Integer> {
 
+
+    @Query("SELECT COUNT(t) > 0 FROM Tickets t " +
+            "WHERE t.schedule.scheduleId = :scheduleId " +
+            "AND t.seat.seatNumber = :seatNumber " +
+            "AND t.ticketStatus != com.MovieBookingApplication.MJCinema.Entity.TicketStatus.CANCELLED")
     boolean existsByScheduleScheduleIdAndSeatSeatNumber(Integer scheduleId, String seatNumber);
 
     @Query("SELECT new com.MovieBookingApplication.MJCinema.DTO.MovieTicketsDTO(" +
@@ -39,6 +44,8 @@ public interface TicketRepository extends JpaRepository<Tickets, Integer> {
     @Query("SELECT t from Tickets t WHERE t.ticketCode = :ticketCode")
     Optional<Tickets> findByTicketCode(String ticketCode);
 
+    @Query("SELECT t FROM Tickets t WHERE t.schedule.scheduleId = :scheduleId " +
+    "AND t.ticketStatus != com.MovieBookingApplication.MJCinema.Entity.TicketStatus.CANCELLED")
     List<Tickets> findByScheduleScheduleId(Integer scheduleId);
 
 
@@ -70,5 +77,9 @@ public interface TicketRepository extends JpaRepository<Tickets, Integer> {
     )
     List<ShowBookingsResponse> showBookings();
 
-
+    @Query("SELECT t.seat.seatNumber " +
+            "FROM Tickets t "+
+            "WHERE t.ticketCode = :seatCode" //the colon is like a substitute
+    )
+    String findSeatNumberByTicketCode(String seatCode);
 }

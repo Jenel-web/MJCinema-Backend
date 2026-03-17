@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -53,18 +54,21 @@ public class TicketsController {
     }
 
     @PatchMapping("/cancel")
-    public ResponseEntity<String> cancelTicket(@RequestBody CancelTicketRequest request, Authentication auth){
+    public ResponseEntity<Map<String, String>> cancelTicket(@RequestBody CancelTicketRequest request, Authentication auth){
+        Map<String, String> errorMessage = new HashMap<>();
+
         if (auth == null || !auth.isAuthenticated()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You must be logged in to cancel tickets.");
         }
         if (auth == null) {
             System.out.println("ERROR: Authentication object is null!");
-            return ResponseEntity.status(401).body("Not Authenticated");
+            errorMessage.put("message", "Not Authenticated.");
+            return ResponseEntity.status(401).body(errorMessage);
         }
         // 2. Pass the username directly to the service
-        String message = ticketService.cancelTicket(request.getTicketCode(), auth.getName() ); //passes the name from auth
+       Map<String, String> result  = ticketService.cancelTicket(request.getTicketCode(), auth.getName() ); //passes the name from auth
 
-        return ResponseEntity.ok(message);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/mytickets")

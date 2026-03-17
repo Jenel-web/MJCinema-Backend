@@ -5,12 +5,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"schedule_id", "seat_id"})
-        }   // makes sure that there are no double booking.
-)
-
+@Table(name = "tickets")
 public class Tickets {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

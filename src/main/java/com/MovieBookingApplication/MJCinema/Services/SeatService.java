@@ -1,6 +1,7 @@
 package com.MovieBookingApplication.MJCinema.Services;
 
 import com.MovieBookingApplication.MJCinema.Entity.Seat;
+import com.MovieBookingApplication.MJCinema.Entity.TicketStatus;
 import com.MovieBookingApplication.MJCinema.Entity.Tickets;
 import com.MovieBookingApplication.MJCinema.Repository.SeatRespository;
 import com.MovieBookingApplication.MJCinema.Repository.TicketRepository;
@@ -26,7 +27,9 @@ public class SeatService {
         List<String> occupiedSeats = new ArrayList<>();
 
         for(Tickets t: bookedTickets){
-            occupiedSeats.add(t.getSeat().getSeatNumber());
+            if(!t.getTicketStatus().equals(TicketStatus.CANCELLED)) {
+                occupiedSeats.add(t.getSeat().getSeatNumber());
+            }
         }
 
         return occupiedSeats;

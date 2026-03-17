@@ -14,9 +14,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class TicketService {
@@ -117,8 +115,8 @@ public class TicketService {
     }
 
     @Transactional
-    public String cancelTicket(String ticketCode, String username){
-
+    public Map<String, String> cancelTicket(String ticketCode, String username){
+        Map<String, String> cancelTicks = new HashMap<>();
         //find the user
         Users user = userRepository.findByUsername(username).orElseThrow(()-> new UsernameNotFoundException("User not found!"));
         //find if the ticket owner of the ticket is the same and cancel if yes.
@@ -139,7 +137,11 @@ public class TicketService {
         Double ticketPrice = seatPrice.getPrice();
         user.setBalance(balance + ticketPrice);
         userRepository.save(user);
-        return "Ticket Deleted Successfully!";
+
+        cancelTicks.put("message", "Ticket Deleted Successfully!");
+        cancelTicks.put("seatNumber", ticket.getSeat().getSeatNumber());
+
+        return cancelTicks;
     }
     public List<MovieTicketsDTO> showMyTickets(Integer userId){
         updateTicketStatus(); //updates the status first before showing the tickets
@@ -174,5 +176,10 @@ public class TicketService {
         List<ShowBookingsResponse> allBookings = ticketRepository.showBookings();
 
         return allBookings;
+    }
+    public String findSeatNumber(String ticketCode){
+        String seatNumber = ticketRepository.findSeatNumberByTicketCode(ticketCode);
+
+        return seatNumber;
     }
 }

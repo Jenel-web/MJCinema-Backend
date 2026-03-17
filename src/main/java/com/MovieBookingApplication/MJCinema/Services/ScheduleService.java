@@ -295,10 +295,11 @@ public class    ScheduleService {
 
             Integer seatsLength = activeSeats.size();
             Integer availableSeats = s.getCinema().getTotalSeats() - seatsLength;
-            Double percentage = ((double) seatsLength/ s.getCinema().getTotalSeats()) * 100; //typecast
+            Double percentage = ((double) seatsLength) / s.getCinema().getTotalSeats() * 100;
+            Double realPercentage = Math.round(percentage * 100.0)/100.0;//typecast
             seatStats.add(new ShowSeatStatsResponse(s.getCinema().getCinemaName(),
                     s.getShowDate(),s.getStatus(),
-                    seatsLength, availableSeats, percentage, s.getSlot()));
+                    seatsLength, availableSeats, realPercentage, s.getSlot()));
         }
         return seatStats;
     }
