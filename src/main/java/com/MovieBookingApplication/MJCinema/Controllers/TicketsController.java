@@ -98,4 +98,11 @@ public class TicketsController {
 
         return ResponseEntity.ok(total);
     }
+
+    @GetMapping("/showRevenueToday")
+    public ResponseEntity<Double> showRevenueToday(){
+        Double revenueToday = ticketService.showRevenueToday();
+        // returns the revenue today which is the total tickets booked today.
+        return ResponseEntity.ok(revenueToday);
+    }
 }

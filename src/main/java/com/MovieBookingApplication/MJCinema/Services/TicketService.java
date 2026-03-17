@@ -186,4 +186,8 @@ public class TicketService {
 
         return seatNumber;
     }
+
+    public Double showRevenueToday(){
+        return ticketRepository.showRevenueToday();
+    }
 }
