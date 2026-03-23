@@ -1,10 +1,8 @@
 package com.MovieBookingApplication.MJCinema.Controllers;
 
-import com.MovieBookingApplication.MJCinema.DTO.AddMovieRequest;
-import com.MovieBookingApplication.MJCinema.DTO.MovieDetailsDTO;
-import com.MovieBookingApplication.MJCinema.DTO.MovieLeaderboardResponse;
-import com.MovieBookingApplication.MJCinema.DTO.ShowMoviePerCinemaResponse;
+import com.MovieBookingApplication.MJCinema.DTO.*;
 import com.MovieBookingApplication.MJCinema.Services.MovieService;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -50,4 +48,10 @@ public class MovieController {
         return ResponseEntity.ok(leaderboard);
     }
 
+    @GetMapping("/showActiveCount")
+    public ResponseEntity<ShowTotalAndActiveMovies> showActiveCount(){
+        ShowTotalAndActiveMovies stats = movieService.showActiveCount();
+
+        return ResponseEntity.ok(stats);
+    }
 }

@@ -54,4 +54,8 @@ public class MovieService {
     public List<MovieLeaderboardResponse> showMovieLeaderboard(){
         return movieRepository.getMovieRevenueLeaderboard();
     }
+
+    public ShowTotalAndActiveMovies showActiveCount(){
+        return movieRepository.getMovieLibraryStats();
+    }
 }

@@ -68,7 +68,7 @@ public class    ScheduleService {
                     m.setStatus(MovieStatus.NOW_SHOWING); //make it now showing
                     // add to set
                 }//this already checks all the possible schedule
-               else{
+               else {
                    m.setStatus(MovieStatus.COMING_SOON);
                 } // if more than 5, its automatically coming soon
             }else{
