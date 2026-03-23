@@ -95,6 +95,6 @@ public interface TicketRepository extends JpaRepository<Tickets, Integer> {
             "JOIN SeatPrice sp ON sp.seatCategory = t.seat.seatCategory " +
             "AND sp.schedule = t.schedule " +
             "WHERE t.ticketStatus != com.MovieBookingApplication.MJCinema.Entity.TicketStatus.CANCELLED "
-            + "AND t.bookedTime >= CURRENT_DATE" )
+            + "AND FUNCTION('DATE', t.bookedTime) = CURRENT_DATE")
     Double showRevenueToday();
 }

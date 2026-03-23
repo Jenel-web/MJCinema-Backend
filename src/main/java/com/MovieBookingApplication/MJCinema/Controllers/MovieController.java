@@ -2,6 +2,7 @@ package com.MovieBookingApplication.MJCinema.Controllers;
 
 import com.MovieBookingApplication.MJCinema.DTO.AddMovieRequest;
 import com.MovieBookingApplication.MJCinema.DTO.MovieDetailsDTO;
+import com.MovieBookingApplication.MJCinema.DTO.MovieLeaderboardResponse;
 import com.MovieBookingApplication.MJCinema.DTO.ShowMoviePerCinemaResponse;
 import com.MovieBookingApplication.MJCinema.Services.MovieService;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +41,13 @@ public class MovieController {
         List<ShowMoviePerCinemaResponse> movieList = movieService.showMovies();
 
         return ResponseEntity.ok(movieList);
+    }
+
+    @GetMapping("/leaderboard")
+    public ResponseEntity<List<MovieLeaderboardResponse>> showMovieLeaderBoard(){
+        List<MovieLeaderboardResponse> leaderboard = movieService.showMovieLeaderboard();
+
+        return ResponseEntity.ok(leaderboard);
     }
 
 }

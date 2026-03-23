@@ -111,4 +111,8 @@ public class UserService {
         List<ShowUsersResponse> usersResponses = userRepository.findAllUsers();
         return usersResponses;
     }
+
+    public Integer showTotalUsers(){
+        return userRepository.showTotalUsers();
+    }
 }

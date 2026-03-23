@@ -102,4 +102,11 @@ public class UserController {
 
         return ResponseEntity.ok(users);
     }
+
+    @GetMapping("/showTotalUsers")
+    public ResponseEntity<Integer> showTotalUsers(){
+        Integer total = userService.showTotalUsers();
+
+        return ResponseEntity.ok(total);
+    }
 }

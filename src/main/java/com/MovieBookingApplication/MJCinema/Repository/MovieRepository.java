@@ -1,6 +1,7 @@
 package com.MovieBookingApplication.MJCinema.Repository;
 
 import com.MovieBookingApplication.MJCinema.DTO.MovieDetailsDTO;
+import com.MovieBookingApplication.MJCinema.DTO.MovieLeaderboardResponse;
 import com.MovieBookingApplication.MJCinema.DTO.MovieTicketsDTO;
 import com.MovieBookingApplication.MJCinema.DTO.ShowMoviePerCinemaResponse;
 import com.MovieBookingApplication.MJCinema.Entity.Movie;
@@ -21,4 +22,14 @@ public interface MovieRepository extends JpaRepository<Movie, Integer> {
     List<ShowMoviePerCinemaResponse> findAllMovies();
 
     List<Movie> findByStatus(MovieStatus status);
+
+    @Query("SELECT new com.MovieBookingApplication.MJCinema.DTO.MovieLeaderboardResponse(m.title, SUM(sp.price)) " +
+            "FROM Tickets t " +
+            "JOIN t.schedule s " +
+            "JOIN s.movie m " +
+            "JOIN SeatPrice sp ON sp.seatCategory = t.seat.seatCategory AND sp.schedule = t.schedule " +
+            "WHERE t.ticketStatus != com.MovieBookingApplication.MJCinema.Entity.TicketStatus.CANCELLED " +
+            "GROUP BY m.title " +
+            "ORDER BY SUM(sp.price) DESC LIMIT 3") // Use the function again or the alias if supported
+    List<MovieLeaderboardResponse> getMovieRevenueLeaderboard();
 }

@@ -37,4 +37,8 @@ public interface UserRepository extends JpaRepository<Users, Integer> {
             "LEFT JOIN SeatPrice sp ON sp.seatCategory = t.seat.seatCategory AND sp.schedule = t.schedule " +
             "GROUP BY u.username, u.balance")
     List<ShowUsersResponse> findAllUsers();
+
+    @Query("SELECT COUNT(s) " +
+            "FROM Users s")
+    Integer showTotalUsers();
 }
