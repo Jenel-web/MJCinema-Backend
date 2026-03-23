@@ -35,6 +35,20 @@ public interface MovieRepository extends JpaRepository<Movie, Integer> {
             "SUM(CASE WHEN m.status = com.MovieBookingApplication.MJCinema.Entity.MovieStatus.INACTIVE THEN 0L ELSE 1L END)) " +
             "FROM Movie m")
     ShowTotalAndActiveMovies getMovieLibraryStats();
+
+    @Query("SELECT new com.MovieBookingApplication.MJCinema.DTO.ShowMovieInTable(" +
+            "m.title, " +
+            "m.rating, " +
+            "m.releaseDate, " +
+            "m.status, " +
+            "COALESCE(SUM(sp.price), 0.0)) " + // Sum of the actual seat prices
+            "FROM Movie m " +
+            "LEFT JOIN Schedule s ON s.movie.id = m.id " +
+            "LEFT JOIN Tickets t ON t.schedule.id = s.id AND t.ticketStatus != 'CANCELLED' " +
+            "LEFT JOIN SeatPrice sp ON sp.seatCategory = t.seat.seatCategory AND sp.schedule = s " +
+            "GROUP BY m.id, m.title, m.rating, m.releaseDate, m.status " +
+            "ORDER BY COALESCE(SUM(sp.price), 0.0) DESC")
+    List<ShowMovieInTable> showMovieTable();
 }
 
 

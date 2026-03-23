@@ -54,4 +54,11 @@ public class MovieController {
 
         return ResponseEntity.ok(stats);
     }
+
+    @GetMapping("/showMovieTable")
+    public ResponseEntity<List<ShowMovieInTable>> showMovieTable(){
+        List<ShowMovieInTable> showMovieTable = movieService.showMovieTable();
+
+        return ResponseEntity.ok(showMovieTable);
+    }
 }

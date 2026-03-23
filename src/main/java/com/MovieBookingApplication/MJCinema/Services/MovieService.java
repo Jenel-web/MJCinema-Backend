@@ -58,4 +58,8 @@ public class MovieService {
     public ShowTotalAndActiveMovies showActiveCount(){
         return movieRepository.getMovieLibraryStats();
     }
+
+    public List<ShowMovieInTable> showMovieTable(){
+        return movieRepository.showMovieTable();
+    }
 }
