@@ -13,9 +13,9 @@ public class TmdbMovieDTO {
     @JsonProperty("poster_path")
     private String posterPath;
     @JsonProperty("release_date")
-    private String release_date;
+    private String releaseDate;
     @JsonProperty("vote_average")
-    private Double vote_average;
+    private Double voteAverage;
 
     public String getPosterPath() {
         return posterPath;
@@ -50,18 +50,18 @@ public class TmdbMovieDTO {
     }
 
     public String getRelease_date() {
-        return release_date;
+        return releaseDate;
     }
 
     public void setRelease_date(String release_date) {
-        this.release_date = release_date;
+        this.releaseDate = release_date;
     }
 
     public Double getVote_average() {
-        return vote_average;
+        return voteAverage;
     }
 
     public void setVote_average(Double vote_average) {
-        this.vote_average = vote_average;
+        this.voteAverage = vote_average;
     }
 }
