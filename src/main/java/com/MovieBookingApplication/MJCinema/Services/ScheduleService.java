@@ -308,4 +308,9 @@ public class    ScheduleService {
         return scheduleRepository.getAverageRevenuePerSlot();
         //returns the average revenue of the five slot to show which showTime more people are more like ly to go
     }
+
+    public Long showScheduleCount(){
+        return scheduleRepository.showScheduleCount();
+    }
+    
 }

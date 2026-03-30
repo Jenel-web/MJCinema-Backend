@@ -55,4 +55,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
             "GROUP BY s.slot " +
             "ORDER BY COALESCE(SUM(sp.price) / NULLIF(COUNT(DISTINCT s.id), 0), 0.0) DESC LIMIT 3")
     List<BestShowTimeResponse> getAverageRevenuePerSlot();
+
+
+    @Query("SELECT COUNT(s) FROM Schedule s")
+    Long showScheduleCount();
 }

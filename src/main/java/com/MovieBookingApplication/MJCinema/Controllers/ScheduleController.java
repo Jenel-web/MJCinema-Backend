@@ -92,4 +92,11 @@ public class ScheduleController {
 
         return  ResponseEntity.ok(bestShowTime);
     }
+
+    @GetMapping("/showScheduleCount")
+    public ResponseEntity<Long> showScheduleCount(){
+        Long scheduleCount = scheduleService.showScheduleCount();
+
+        return ResponseEntity.ok(scheduleCount);
+    }
 }
