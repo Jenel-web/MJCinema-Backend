@@ -303,4 +303,9 @@ public class    ScheduleService {
         }
         return seatStats;
     }
+
+    public List<BestShowTimeResponse> showBestShowTime(){
+        return scheduleRepository.getAverageRevenuePerSlot();
+        //returns the average revenue of the five slot to show which showTime more people are more like ly to go
+    }
 }

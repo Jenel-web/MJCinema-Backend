@@ -49,7 +49,7 @@ public class TmdbMovieDTO {
         this.overview = overview;
     }
 
-    public String getRelease_date() {
+    public String getReleaseDate() {
         return releaseDate;
     }
 
@@ -57,7 +57,7 @@ public class TmdbMovieDTO {
         this.releaseDate = release_date;
     }
 
-    public Double getVote_average() {
+    public Double getVoteAverage() {
         return voteAverage;
     }
 

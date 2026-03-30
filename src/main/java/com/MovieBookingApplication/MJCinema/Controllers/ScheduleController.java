@@ -85,4 +85,11 @@ public class ScheduleController {
 
         return ResponseEntity.ok(seatStats);
     }
+
+    @GetMapping("/bestShowtime")
+    public ResponseEntity<List<BestShowTimeResponse>> showBestShowTime(){
+        List<BestShowTimeResponse> bestShowTime = scheduleService.showBestShowTime();
+
+        return  ResponseEntity.ok(bestShowTime);
+    }
 }

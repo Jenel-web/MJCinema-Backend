@@ -49,6 +49,7 @@ public interface MovieRepository extends JpaRepository<Movie, Integer> {
             "GROUP BY m.id, m.title, m.rating, m.releaseDate, m.status " +
             "ORDER BY COALESCE(SUM(sp.price), 0.0) DESC")
     List<ShowMovieInTable> showMovieTable();
+
 }
 
 

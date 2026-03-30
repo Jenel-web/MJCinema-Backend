@@ -17,7 +17,10 @@ public class MovieService {
     private MovieRepository movieRepository;
 
     @Autowired
-    private TmdbService tmdbService; //needed for fetching a movie.
+    private TmdbService tmdbService;
+
+    @Autowired
+    private ScheduleService scheduleService;//needed for fetching a movie.
     public boolean addMovie(Long tmdbId){
         try {
             TmdbMovieDTO tmdbMovieDTO = tmdbService.getMovieDetails(tmdbId);
@@ -32,11 +35,11 @@ public class MovieService {
             movie.setTmdbId(tmdbMovieDTO.getId());
             movie.setOverview(tmdbMovieDTO.getOverview());
             movie.setPoster(tmdbMovieDTO.getPosterPath());
-            movie.setReleaseDate(LocalDate.parse(tmdbMovieDTO.getRelease_date())); //release date is string in tmdb
+            movie.setReleaseDate(LocalDate.parse(tmdbMovieDTO.getReleaseDate())); //release date is string in tmdb
             movie.setTitle(tmdbMovieDTO.getTitle());
             movie.setDuration("2 hrs");
             movie.setStatus(MovieStatus.NEW);
-            movie.setRating(tmdbMovieDTO.getVote_average());
+            movie.setRating(tmdbMovieDTO.getVoteAverage());
             movieRepository.save(movie);
 
             //remember that every field is nullable so make sure that every field is filled before saving to repo.
@@ -48,6 +51,8 @@ public class MovieService {
     }
 
     public List<ShowMoviePerCinemaResponse> showMovies(){
+        scheduleService.updateSched();
+        scheduleService.updateStatus();
         return movieRepository.findAllMovies();
     }
 
@@ -56,10 +61,14 @@ public class MovieService {
     }
 
     public ShowTotalAndActiveMovies showActiveCount(){
+        scheduleService.updateSched();
+        scheduleService.updateStatus();
         return movieRepository.getMovieLibraryStats();
     }
 
     public List<ShowMovieInTable> showMovieTable(){
+        //scheduleService.updateSched();
+        scheduleService.updateStatus();
         return movieRepository.showMovieTable();
     }
 }
