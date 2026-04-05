@@ -59,4 +59,11 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
 
     @Query("SELECT COUNT(s) FROM Schedule s")
     Long showScheduleCount();
+
+    @Query("SELECT COALESCE(SUM(sp.price) / NULLIF(COUNT(DISTINCT s.id), 0), 0.0) " +
+            "FROM Schedule s " +
+            "JOIN Tickets t ON t.schedule.id = s.id " +
+            "JOIN SeatPrice sp ON sp.seatCategory = t.seat.seatCategory AND sp.schedule = s " +
+            "WHERE t.ticketStatus != 'CANCELLED'")
+    Double getAverageRevenuePerSchedule();
 }

@@ -13,14 +13,17 @@ public class ShowSeatStatsResponse {
     private Integer availableSeats;
     private Double percentage;
     private ScheduleSlot slot;
+    private String title;
 
-    public ShowSeatStatsResponse(String cinemaName,
+    public ShowSeatStatsResponse(String title,
+                                 String cinemaName,
                                  LocalDate showDate,
                                  ScheduleStatus status,
                                  Integer occupiedSeats,
                                  Integer availableSeats,
                                  Double percentage,
                                  ScheduleSlot slot) {
+        this.title = title;
         this.cinemaName = cinemaName;
         this.showDate = showDate;
         this.status = status;
@@ -28,6 +31,14 @@ public class ShowSeatStatsResponse {
         this.availableSeats = availableSeats;
         this.percentage = percentage;
         this.slot = slot;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public ScheduleSlot getSlot() {

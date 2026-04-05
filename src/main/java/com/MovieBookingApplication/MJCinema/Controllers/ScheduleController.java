@@ -99,4 +99,18 @@ public class ScheduleController {
 
         return ResponseEntity.ok(scheduleCount);
     }
+
+    @GetMapping("/showAverageRevenue")
+    public ResponseEntity<Double> showAverageRevenue(){
+        Double averageRevenue = scheduleService.showAverageRevenue();
+
+        return ResponseEntity.ok(averageRevenue);
+    }
+
+    @GetMapping("/showSlots")
+    public ResponseEntity<List<String>> showScheduleSlots(){
+        List<String> slots = scheduleService.showScheduleSlots();
+
+        return ResponseEntity.ok(slots);
+    }
 }

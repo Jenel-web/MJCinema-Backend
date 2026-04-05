@@ -297,7 +297,7 @@ public class    ScheduleService {
             Integer availableSeats = s.getCinema().getTotalSeats() - seatsLength;
             Double percentage = ((double) seatsLength) / s.getCinema().getTotalSeats() * 100;
             Double realPercentage = Math.round(percentage * 100.0)/100.0;//typecast
-            seatStats.add(new ShowSeatStatsResponse(s.getCinema().getCinemaName(),
+            seatStats.add(new ShowSeatStatsResponse(s.getMovie().getTitle(), s.getCinema().getCinemaName(),
                     s.getShowDate(),s.getStatus(),
                     seatsLength, availableSeats, realPercentage, s.getSlot()));
         }
@@ -312,5 +312,19 @@ public class    ScheduleService {
     public Long showScheduleCount(){
         return scheduleRepository.showScheduleCount();
     }
-    
+
+    public Double showAverageRevenue(){
+        return scheduleRepository.getAverageRevenuePerSchedule();
+    }
+
+    public List<String> showScheduleSlots(){
+        List<String> slotValues = new ArrayList<>();
+
+        for(ScheduleSlot slot: ScheduleSlot.values()){
+            slotValues.add(slot.name());
+        }
+
+        return slotValues;
+    }
+
 }
