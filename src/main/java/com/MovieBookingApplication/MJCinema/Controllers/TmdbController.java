@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/movie/tmdb")
-@CrossOrigin(origins = "https://mjcinemaapp.vercel.app/")
+@CrossOrigin(origins = "https://mjcinemaapp.vercel.app")
 public class TmdbController {
 
     private final TmdbService tmdbService;

@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@CrossOrigin(origins = "https://mjcinemaapp.vercel.app/")
+@CrossOrigin(origins = "https://mjcinemaapp.vercel.app")
 @RestController
 @RequestMapping("/user")
 public class UserController {
