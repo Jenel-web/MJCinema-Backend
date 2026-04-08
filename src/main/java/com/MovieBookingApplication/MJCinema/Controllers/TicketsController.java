@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 
-@CrossOrigin(origins = "http://127.0.0.1:5500", allowCredentials = "true", allowedHeaders = "*")//can be used when credentials are included.
+@CrossOrigin(origins = "https://mjcinema-5923l8kkj-jenel-webs-projects.vercel.app")
 @RestController
 @RequestMapping("/ticket")
 public class TicketsController {

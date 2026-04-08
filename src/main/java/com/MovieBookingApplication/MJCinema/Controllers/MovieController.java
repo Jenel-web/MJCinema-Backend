@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "https://mjcinema-5923l8kkj-jenel-webs-projects.vercel.app")
 @RestController
 @RequestMapping("/movie")
 public class MovieController {

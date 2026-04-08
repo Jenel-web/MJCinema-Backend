@@ -8,7 +8,7 @@
 
     import java.util.List;
 
-    @CrossOrigin(origins = "*")
+    @CrossOrigin(origins = "https://mjcinema-5923l8kkj-jenel-webs-projects.vercel.app")
     @RestController
     @RequestMapping("/seat")
     public class SeatController {
