@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@CrossOrigin(origins = "https://mjcinema-5923l8kkj-jenel-webs-projects.vercel.app")
+@CrossOrigin(origins = "https://mjcinemaapp.vercel.app/")
 @RestController
 @RequestMapping ("/schedule")
 public class ScheduleController {
