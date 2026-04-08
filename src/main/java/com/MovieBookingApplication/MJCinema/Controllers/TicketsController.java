@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 
-@CrossOrigin(origins = "https://mjcinemaapp.vercel.app/")
+@CrossOrigin(origins = "https://mjcinemaapp.vercel.app")
 @RestController
 @RequestMapping("/ticket")
 public class TicketsController {
