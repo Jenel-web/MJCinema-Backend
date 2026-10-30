@@ -38,7 +38,7 @@ public class SecurityConfig {
                 .headers(headers -> headers.frameOptions(frame -> frame.disable()))
                 .authorizeHttpRequests(auth ->
                         auth
-                                .requestMatchers("/index.html", "/css/**", "/js/**", "/images/**").permitAll()
+                                .requestMatchers("/index.html", "/register.html", "/html/**", "/css/**", "/js/**", "/images/**").permitAll()
                                 // PROTECT everything else
                                 .requestMatchers("/user/login", "/user/register").permitAll()
                                 .requestMatchers("/schedule/**").permitAll() // Allows now-showing and coming-soon
