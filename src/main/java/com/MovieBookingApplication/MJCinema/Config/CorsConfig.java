@@ -14,7 +14,7 @@ public class CorsConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins("https://mjcinemaapp.vercel.app", "http://127.0.0.1:5500",          // Local (Live Server)
-                        "http://localhost:5500")
+                        "http://localhost:5500", "https://mj-cinema-frontend.vercel.app")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
