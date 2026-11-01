@@ -71,7 +71,9 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(
                 "http://127.0.0.1:5500",
-                "https://mjcinemaapp.vercel.app"   // ← ADD THIS
+                "http://localhost:5500",
+                "https://mjcinemaapp.vercel.app",
+                "https://mj-cinema-frontend.vercel.app"
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
