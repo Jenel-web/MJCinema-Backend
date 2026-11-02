@@ -1,3 +1,5 @@
+import { BASE_URL, authFetch, isLoggedOut } from "./config.js";
+
 let priceList = {}; //pricelist where the data we fetched will go
 let selectedSeats = []; //initialized the selected seats which is empty at first
 
@@ -10,7 +12,7 @@ async function initBooking() {
     return;
   }
   // 1. Fetch Schedule (including Cinema layout)
-  const response = await fetch(`http://localhost:8080/schedule/${scheduleId}`);
+  const response = await fetch(`${BASE_URL}/schedule/${scheduleId}`);
   const schedule = await response.json();
 
   // 2. Setup the Grid based on Cinema dimensions
@@ -23,7 +25,7 @@ async function initBooking() {
   }
   //get the prices
   const result = await fetch(
-    `http://localhost:8080/schedule/schedPrice/${scheduleId}`
+    `${BASE_URL}/schedule/schedPrice/${scheduleId}`
   );
   const prices = await result.json();
   const selected = await getOccupiedSeats(scheduleId); //makes the array of strings of selected seats
@@ -42,7 +44,7 @@ async function initBooking() {
 
 async function getOccupiedSeats(scheduleId) {
   const response = await fetch(
-    `http://localhost:8080/seat/occupied/${scheduleId}`
+    `${BASE_URL}/seat/occupied/${scheduleId}`
   );
 
   const occupiedSeats = await response.json();
@@ -135,7 +137,7 @@ async function bookTicket(selectedSeats = []) {
 
   console.log("Sending Data:", JSON.stringify(data));
   try {
-    const response = await fetch("http://localhost:8080/ticket/book", {
+    const response = await authFetch(`${BASE_URL}/ticket/book`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -143,6 +145,18 @@ async function bookTicket(selectedSeats = []) {
       body: JSON.stringify(data),
       credentials: "include",
     });
+
+    if (isLoggedOut(response)) {
+      // no token, an expired token or a wrong one: send the user back to login
+      localStorage.removeItem("jwtToken");
+      showStatus(
+        false,
+        "Session Expired",
+        "Please log in again to book your seats.",
+        "index.html"
+      );
+      return;
+    }
 
     if (response.ok) {
       const result = await response.json();
@@ -164,7 +178,7 @@ async function bookTicket(selectedSeats = []) {
     console.error("Error : " + error);
   }
 }
-function showStatus(isSuccess, title, message) {
+function showStatus(isSuccess, title, message, redirectTo = null) {
   const modal = document.getElementById("status-modal");
   const card = modal.querySelector(".status-card");
   const titleEl = document.getElementById("status-title");
@@ -193,6 +207,7 @@ function showStatus(isSuccess, title, message) {
     modal.style.display = "none";
     // Redirect logic remains
     if (isSuccess) window.location.href = "dashboard.html";
+    else if (redirectTo) window.location.href = redirectTo;
   };
 }
 const bookBtn = document.querySelector(".btn-confirm");

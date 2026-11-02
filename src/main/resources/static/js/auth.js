@@ -1,9 +1,10 @@
 import { UI } from "./UI.js";
+import { BASE_URL } from "./config.js";
 const ui = new UI(); //imports UI and instantiates
 
 export class Auth {
   constructor() {
-    this.baseUrl = "http://localhost:8080";
+    this.baseUrl = BASE_URL;
     // Initialize listeners when the class is instantiated
     this.initListeners();
   }
@@ -95,6 +96,7 @@ export class Auth {
     if (result.success) {
       localStorage.setItem("userId", result.data.userId);
       localStorage.setItem("username", result.data.username);
+      localStorage.setItem("jwtToken", result.data.jwtToken); //sent with the protected requests
       ui.showPopup("Login successful!", "green");
       window.location.href = "dashboard.html";
     } else {

@@ -1,5 +1,6 @@
 import { UI } from "./UI.js";
 import { Auth } from "./auth.js";
+import { BASE_URL } from "./config.js";
 
 const authApp = new Auth(); //automatically does what the function sayss
 const ui = new UI(); //imports UI and instantiates
@@ -123,7 +124,7 @@ const movieId = localStorage.getItem("movieId"); //should use quotation marks fo
 
 //for booking
 async function proceedToBooking(movieId) {
-  const baseUrl = "http://localhost:8080"; //makes the base url thank can be accessed within the function
+  const baseUrl = BASE_URL; //makes the base url thank can be accessed within the function
   const bookBtn = document.querySelector(".book-btn-modal"); //button class
   if (bookBtn) {
     try {
@@ -194,14 +195,14 @@ if (nowShowing) {
   nowShowing.addEventListener("click", (e) => {
     e.preventDefault();
     const movie = document.getElementById("movieCard");
-    loadMovies("http://localhost:8080/schedule/now-showing", "now");
+    loadMovies(`${BASE_URL}/schedule/now-showing`, "now");
     //uses the movie as a parameter
   });
 } //if the nav button now showing is tapped. it will show the now showing movies html
 if (comingSoon) {
   comingSoon.addEventListener("click", (e) => {
     e.preventDefault();
-    loadMovies("http://localhost:8080/schedule/coming-soon", "soon"); //this is where the typex comes from
+    loadMovies(`${BASE_URL}/schedule/coming-soon`, "soon"); //this is where the typex comes from
   });
 }
 if (cinema) {

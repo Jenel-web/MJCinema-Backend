@@ -49,10 +49,16 @@ public class TicketService {
         //a seat can only be picked once per booking
         List<String> seatNumbers = new ArrayList<>(new LinkedHashSet<>(selectedSeat));
 
+        // 0. lock the schedule first and then the user (always in this order) so that two bookings of the
+        // same schedule, or two bookings of the same user, cannot run at the same time
+        scheduleRepository.findByIdForUpdate(scheduleId).orElseThrow(() -> new RuntimeException("Schedule not found"));
         // 1. validate user
-        Users user = userRepository.findById(userId).orElseThrow(()-> new UsernameNotFoundException("User not found!"));
+        Users user = userRepository.findByIdForUpdate(userId).orElseThrow(()-> new UsernameNotFoundException("User not found!"));
         // 2. validate schedule (the schedule and its cinema come in one query)
         Schedule schedule = scheduleRepository.findByIdWithDetails(scheduleId).orElseThrow(() -> new RuntimeException("Schedule not found"));
+        if(schedule.getStatus() != ScheduleStatus.ACTIVE){
+            throw new RuntimeException("Schedule is not available for booking.");
+        }
         Cinema cinema = schedule.getCinema();
 
         // 3. validate seats: every lookup is done once for all the seats instead of once per seat
@@ -134,14 +140,18 @@ public class TicketService {
     @Transactional
     public Map<String, String> cancelTicket(String ticketCode, String username){
         Map<String, String> cancelTicks = new HashMap<>();
-        //find the user
-        Users user = userRepository.findByUsername(username).orElseThrow(()-> new UsernameNotFoundException("User not found!"));
+        //find the user and lock the row, so two cancellations of the same user cannot refund twice
+        Users user = userRepository.findByUsernameForUpdate(username).orElseThrow(()-> new UsernameNotFoundException("User not found!"));
         //find if the ticket owner of the ticket is the same and cancel if yes.
         Tickets ticket = ticketRepository.findByTicketCode(ticketCode)
                 .orElseThrow(() -> new RuntimeException("Ticket not found."));
 
         if(!ticket.getUser().getUsername().equals(username)){
             throw new RuntimeException("Ticket Cancellation Failed.");
+        }
+        //only an active ticket can be cancelled and refunded
+        if(ticket.getTicketStatus() != TicketStatus.ACTIVE){
+            throw new RuntimeException("Ticket cannot be cancelled.");
         }
 
         //delete ticket

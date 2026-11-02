@@ -3,7 +3,9 @@ package com.MovieBookingApplication.MJCinema.Repository;
 import com.MovieBookingApplication.MJCinema.DTO.GetUserRequest;
 import com.MovieBookingApplication.MJCinema.DTO.ShowUsersResponse;
 import com.MovieBookingApplication.MJCinema.Entity.Users;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +19,16 @@ public interface UserRepository extends JpaRepository<Users, Integer> {
 
 
     Optional<Users> findByUsername(String username);
+
+    //lock the user row until the transaction ends so two requests cannot both spend the same balance.
+    //only call these inside a transaction.
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT u FROM Users u WHERE u.userId = :userId")
+    Optional<Users> findByIdForUpdate(Integer userId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT u FROM Users u WHERE u.username = :username")
+    Optional<Users> findByUsernameForUpdate(String username);
 
     Optional<Users> findByUsernameAndPassword(String username, String password);
 

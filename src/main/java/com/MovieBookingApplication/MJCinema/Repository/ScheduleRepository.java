@@ -4,7 +4,9 @@ import com.MovieBookingApplication.MJCinema.DTO.*;
 import com.MovieBookingApplication.MJCinema.Entity.Movie;
 import com.MovieBookingApplication.MJCinema.Entity.MovieStatus;
 import com.MovieBookingApplication.MJCinema.Entity.Schedule;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -27,7 +29,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
 
 
     @Query("SELECT COUNT(s) > 0 FROM Schedule s WHERE s.cinema.id = :cinemaId AND s.showDate = :showDate " +
-            "AND s.slot = :slot" )
+            "AND s.slot = :slot AND s.status <> com.MovieBookingApplication.MJCinema.Entity.ScheduleStatus.CANCELLED" )
     boolean existsOverlappingSchedule(@Param("cinemaId") Integer cinemaId,
                                       @Param("showDate")LocalDate showDate,
                                       @Param("slot") ScheduleSlot slot);
@@ -50,11 +52,17 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
     int completePastSchedules(LocalDate today, LocalTime time);
 
     //movie and cinema are fetched together because the entity is returned as json outside of a transaction.
-    @Query("SELECT s FROM Schedule s JOIN FETCH s.movie JOIN FETCH s.cinema WHERE s.movie.movieId = :movieId AND (s.showDate > :today OR (s.showDate = :today AND s.startTime > :time))")
+    @Query("SELECT s FROM Schedule s JOIN FETCH s.movie JOIN FETCH s.cinema WHERE s.movie.movieId = :movieId AND s.status = com.MovieBookingApplication.MJCinema.Entity.ScheduleStatus.ACTIVE AND (s.showDate > :today OR (s.showDate = :today AND s.startTime > :time))")
     List<Schedule> findByMovieId(Integer movieId, LocalDate today, LocalTime time);
 
     @Query("SELECT s FROM Schedule s JOIN FETCH s.movie JOIN FETCH s.cinema WHERE s.scheduleId = :scheduleId")
     Optional<Schedule> findByIdWithDetails(Integer scheduleId);
+
+    //locks the schedule row until the transaction ends, so bookings and cancellations of the
+    //same schedule run one after another. only call it inside a transaction.
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT s FROM Schedule s WHERE s.scheduleId = :scheduleId")
+    Optional<Schedule> findByIdForUpdate(Integer scheduleId);
 
     //occupied and available seats per active schedule in one query.
     @Query("SELECT new com.MovieBookingApplication.MJCinema.DTO.ShowSeatStatsResponse(" +

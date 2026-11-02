@@ -175,11 +175,13 @@ public class    ScheduleService {
 
     @Transactional
     public String removeSchedule(Integer scheduleId){
-        //find the schedule  using the schedule id
-        Schedule schedule = scheduleRepository.findById(scheduleId).
+        //find the schedule using the schedule id and lock it, so no ticket can be booked while it is cancelled
+        Schedule schedule = scheduleRepository.findByIdForUpdate(scheduleId).
                 orElseThrow(()-> new RuntimeException("Schedule not found."));
 
-        if(schedule.getShowDate().isBefore(LocalDate.now())){
+        if(schedule.getShowDate().isBefore(LocalDate.now())
+                || schedule.getStatus() == ScheduleStatus.CANCELLED
+                || schedule.getStatus() == ScheduleStatus.COMPLETED){
             throw new RuntimeException("Schedule cannot be cancelled.");
         }
         //find the tickets in the schedule id, the user and seat come with them in the same query
@@ -201,8 +203,11 @@ public class    ScheduleService {
             Users user = t.getUser();
             user.setBalance(user.getBalance() + refund);
             refundedUsers.add(user);
+            //the money is back, so the ticket is cancelled too (it no longer counts as revenue or blocks the seat)
+            t.setTicketStatus(TicketStatus.CANCELLED);
         }
         userRepository.saveAll(refundedUsers);
+        ticketRepository.saveAll(bookedTickets);
         //change the status to cancelled
         schedule.setStatus(ScheduleStatus.CANCELLED);
         scheduleRepository.save(schedule);
