@@ -9,7 +9,7 @@ public class SeatPrice {
     @Column(name = "seat_price_id")
     private Integer seatPriceId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "schedule_id", nullable = false)
     private Schedule schedule; // there will be many schedules with the same seat price.
 

@@ -9,7 +9,7 @@ public class Seat {
     @Column(name = "seat_id")
     private Integer seatId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cinema_id", nullable = false)
     private Cinema cinema; // should be the entity to make a foreign key
     // it connects to the table and finds the fk.

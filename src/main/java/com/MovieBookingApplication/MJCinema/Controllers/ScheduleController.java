@@ -73,8 +73,8 @@ public class ScheduleController {
     }
 
     @GetMapping("/schedPrice/{id}")
-    public ResponseEntity<List<SeatPrice>> findSchedPrices(@PathVariable("id") Integer scheduleId) {
-        List<SeatPrice> seatPrices =  scheduleService.findSeatPricesBySchedule(scheduleId);
+    public ResponseEntity<List<SeatPriceResponse>> findSchedPrices(@PathVariable("id") Integer scheduleId) {
+        List<SeatPriceResponse> seatPrices =  scheduleService.findSeatPricesBySchedule(scheduleId);
 
         return ResponseEntity.ok(seatPrices);
     }

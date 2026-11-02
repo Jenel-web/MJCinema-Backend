@@ -49,8 +49,22 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
             "AND (s.showDate < :today OR (s.showDate = :today AND s.startTime < :time))")
     int completePastSchedules(LocalDate today, LocalTime time);
 
-    @Query("SELECT s FROM Schedule s WHERE s.movie.movieId = :movieId AND (s.showDate > :today OR (s.showDate = :today AND s.startTime > :time))")
+    //movie and cinema are fetched together because the entity is returned as json outside of a transaction.
+    @Query("SELECT s FROM Schedule s JOIN FETCH s.movie JOIN FETCH s.cinema WHERE s.movie.movieId = :movieId AND (s.showDate > :today OR (s.showDate = :today AND s.startTime > :time))")
     List<Schedule> findByMovieId(Integer movieId, LocalDate today, LocalTime time);
+
+    @Query("SELECT s FROM Schedule s JOIN FETCH s.movie JOIN FETCH s.cinema WHERE s.scheduleId = :scheduleId")
+    Optional<Schedule> findByIdWithDetails(Integer scheduleId);
+
+    //occupied and available seats per active schedule in one query.
+    @Query("SELECT new com.MovieBookingApplication.MJCinema.DTO.ShowSeatStatsResponse(" +
+            "m.title, c.cinemaName, s.showDate, s.status, COUNT(t), c.totalSeats, s.slot) " +
+            "FROM Schedule s JOIN s.movie m JOIN s.cinema c " +
+            "LEFT JOIN Tickets t ON t.schedule = s " +
+            "AND t.ticketStatus <> com.MovieBookingApplication.MJCinema.Entity.TicketStatus.CANCELLED " +
+            "WHERE s.status = com.MovieBookingApplication.MJCinema.Entity.ScheduleStatus.ACTIVE " +
+            "GROUP BY s.scheduleId, m.title, c.cinemaName, c.totalSeats, s.showDate, s.status, s.slot")
+    List<ShowSeatStatsResponse> findSeatStats();
 
     @Query("SELECT s FROM Schedule s WHERE s.status = com.MovieBookingApplication.MJCinema.Entity.ScheduleStatus.ACTIVE")
     List<Schedule> ShowActiveSchedules();

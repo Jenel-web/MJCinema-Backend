@@ -14,10 +14,10 @@ public class Schedule {
     private Integer scheduleId;
 
     @JoinColumn(name = "movie_id", nullable = false)
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Movie movie; // many schedules for one movie but only one movie per schedule
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name ="cinema_id",nullable = false)
     private Cinema cinema; // there can be many schedules on one cinema.
     @Column(name = "show_date", nullable = false)

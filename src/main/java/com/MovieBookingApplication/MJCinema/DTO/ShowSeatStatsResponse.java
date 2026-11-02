@@ -33,6 +33,26 @@ public class ShowSeatStatsResponse {
         this.slot = slot;
     }
 
+    //used by the seat stats query, which only knows the occupied count and the cinema's total seats.
+    public ShowSeatStatsResponse(String title,
+                                 String cinemaName,
+                                 LocalDate showDate,
+                                 ScheduleStatus status,
+                                 Long occupiedSeats,
+                                 Integer totalSeats,
+                                 ScheduleSlot slot) {
+        int total = totalSeats == null ? 0 : totalSeats;
+        int occupied = occupiedSeats.intValue();
+        this.title = title;
+        this.cinemaName = cinemaName;
+        this.showDate = showDate;
+        this.status = status;
+        this.occupiedSeats = occupied;
+        this.availableSeats = total - occupied;
+        this.percentage = total == 0 ? 0.0 : Math.round(((double) occupied) / total * 10000.0) / 100.0;
+        this.slot = slot;
+    }
+
     public String getTitle() {
         return title;
     }

@@ -43,76 +43,88 @@ public class TicketService {
     @Transactional //cancels if not perfectly executed
     public TicketDTO bookTicket(Integer userId, Integer scheduleId, List<String> selectedSeat){
 
-       //finding an entry on the db automatically creates an element that is of the same type
-        // where you can fetch the data in the entry by calling the declared name.
-
+        if(selectedSeat == null || selectedSeat.isEmpty()){
+            throw new RuntimeException("No seats selected.");
+        }
+        //a seat can only be picked once per booking
+        List<String> seatNumbers = new ArrayList<>(new LinkedHashSet<>(selectedSeat));
 
         // 1. validate user
         Users user = userRepository.findById(userId).orElseThrow(()-> new UsernameNotFoundException("User not found!"));
-        // 2. validate schedule
-        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new RuntimeException("Schedule not found"));
-        // 3. validate seat
+        // 2. validate schedule (the schedule and its cinema come in one query)
+        Schedule schedule = scheduleRepository.findByIdWithDetails(scheduleId).orElseThrow(() -> new RuntimeException("Schedule not found"));
         Cinema cinema = schedule.getCinema();
-        List<Tickets> ticketsBooked = new ArrayList<>();
-        for(String s: selectedSeat) {
-            Tickets ticket = new Tickets();
-            Seat seatNumber = seatRespository.findBySeatNumberAndCinemaCinemaId(
-                    s, cinema.getCinemaId()).orElseThrow(() -> new RuntimeException("Seat not found."));
-            // this creates a seat object that is found using the function.
-            // 4. check availability
-            boolean isTaken = ticketRepository.existsByScheduleScheduleIdAndSeatSeatNumber(scheduleId, s);
 
-            if (isTaken) {
+        // 3. validate seats: every lookup is done once for all the seats instead of once per seat
+        Map<String, Seat> seats = new HashMap<>();
+        for(Seat seat: seatRespository.findByCinemaCinemaIdAndSeatNumberIn(cinema.getCinemaId(), seatNumbers)){
+            seats.put(seat.getSeatNumber(), seat);
+        }
+        // 4. check availability
+        Set<String> taken = new HashSet<>(ticketRepository.findTakenSeatNumbers(scheduleId, seatNumbers));
+        // 5. prices of the schedule per seat category
+        Map<SeatCategory, Double> prices = new HashMap<>();
+        for(SeatPrice sp: seatPriceRepository.findByScheduleScheduleId(scheduleId)){
+            prices.put(sp.getSeatCategory(), sp.getPrice());
+        }
+
+        List<Tickets> ticketsBooked = new ArrayList<>();
+        Map<Tickets, Double> ticketPrices = new HashMap<>();
+        double total = 0;
+        for(String s: seatNumbers) {
+            Seat seat = seats.get(s);
+            if(seat == null){
+                throw new RuntimeException("Seat not found.");
+            }
+            if (taken.contains(s)) {
                 throw new RuntimeException("Seat is already taken.");
             }
-            // 5. calculate price and deduct
-            SeatPrice price = seatPriceRepository.findBySeatCategoryAndScheduleScheduleId(seatNumber.getSeatCategory(),
-                    scheduleId).orElseThrow(() -> new RuntimeException("Price not found."));
-
-            Double ticketPrice = price.getPrice();
-            Double currentBalance = user.getBalance();
-            if (currentBalance < ticketPrice) {
-                throw new RuntimeException("Insufficient balance.");
-                //throw is the word for errors. not return!!!!
+            Double ticketPrice = prices.get(seat.getSeatCategory());
+            if(ticketPrice == null){
+                throw new RuntimeException("Price not found.");
             }
-            user.setBalance(currentBalance - ticketPrice);
-            // 6. save ticket
+            total += ticketPrice;
+
+            Tickets ticket = new Tickets();
             ticket.setUser(user);
             ticket.setSchedule(schedule);
-            ticket.setSeat(seatNumber);
+            ticket.setSeat(seat);
             ticket.setTicketCode("MJ-" + UUID.randomUUID().toString().substring(0, 6));
             ticket.setTicketStatus(TicketStatus.ACTIVE);
             ticket.setBookedTime(LocalDateTime.now());
             ticketsBooked.add(ticket);
+            ticketPrices.put(ticket, ticketPrice);
         }
+
+        // 6. deduct the total once
+        Double currentBalance = user.getBalance();
+        if (currentBalance < total) {
+            throw new RuntimeException("Insufficient balance.");
+            //throw is the word for errors. not return!!!!
+        }
+        user.setBalance(currentBalance - total);
         ticketRepository.saveAll(ticketsBooked);
-        return DTOWrapper(ticketsBooked.get(0)); //returns the first ticket in the frontend.
+
+        Tickets first = ticketsBooked.get(0);
+        return toTicketDTO(first, ticketPrices.get(first)); //returns the first ticket in the frontend.
     }
 
-
-
-    public TicketDTO DTOWrapper(Tickets ticket){
+    //builds the response from data that is already loaded, so it does not query again.
+    private TicketDTO toTicketDTO(Tickets ticket, Double price){
         TicketDTO ticketDTO = new TicketDTO();
 
         ticketDTO.setName(ticket.getUser().getUsername());
         ticketDTO.setTitle(ticket.getSchedule().getMovie().getTitle());
         ticketDTO.setSeat(ticket.getSeat().getSeatNumber());
         ticketDTO.setCinema("MJCinema");
-        SeatPrice ticketPrice = seatPriceRepository.findBySeatCategoryAndScheduleScheduleId(ticket.getSeat().getSeatCategory(),
-                ticket.getSchedule().getScheduleId()).orElseThrow(() -> new RuntimeException("Price not found."));
-        // if its optional, always remember to throw a runtime exception since you are not sure if there is a value or not.
-        ticketDTO.setPrice(ticketPrice.getPrice());
+        ticketDTO.setPrice(price);
         ticketDTO.setTicketCode(ticket.getTicketCode());
         ticketDTO.setSeatCategory(ticket.getSeat().getSeatCategory());
-        //make the enum a string so it can be displayed using toString()
-        // if you declared it as a string.
         ticketDTO.setStatus("SUCCESS");
         ticketDTO.setShowDate(ticket.getSchedule().getShowDate());
         ticketDTO.setShowTime(ticket.getSchedule().getStartTime());
-        ticket.setTicketStatus(TicketStatus.ACTIVE);
 
         return ticketDTO;
-
     }
 
     public List<MovieTicketsDTO> showMovieTickets(Integer movieId){

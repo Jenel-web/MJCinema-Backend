@@ -12,15 +12,15 @@ public class Tickets {
     @Column(name = "ticket_id")
     private Integer ticketId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id",referencedColumnName = "user_id", nullable = false)
     private Users user; // only one user per ticket but there can be many tickets for the same user
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "schedule_id", nullable = false)
     private Schedule schedule; //many tickets can be having the same schedule id but only one schedule per ticket
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seat_id", nullable = false)
     private Seat seat; // one ticket per seat but there can be many tickets with the same seat but diff schedule.
 

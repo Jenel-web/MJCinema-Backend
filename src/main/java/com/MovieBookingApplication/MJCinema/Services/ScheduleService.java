@@ -50,7 +50,7 @@ public class    ScheduleService {
     }
 
     public Optional<Schedule> findSchedule(Integer scheduleId){
-      return scheduleRepository.findById(scheduleId);
+      return scheduleRepository.findByIdWithDetails(scheduleId);
 
     }
     private static final int NOW_SHOWING_DAYS = 5; //a movie is now showing if its next schedule is within this many days
@@ -90,14 +90,13 @@ public class    ScheduleService {
         //make list of all seats
         List<Seat> cinemaSeats = seatRespository.findByScheduleId(scheduleId);
 
-        //Schedule
-        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                ()-> new RuntimeException("Schedule not found!")
-        );
+        //Schedule only needs to exist, so there is no need to load it
+        if(!scheduleRepository.existsById(scheduleId)){
+            throw new RuntimeException("Schedule not found!");
+        }
 
-
-        //make list of taken seats
-        List<String> takeSeats = ticketRepository.FindSeatSeatNumberByScheduleId(scheduleId);
+        //make a set of taken seats so the lookup below is fast
+        Set<String> takeSeats = new HashSet<>(ticketRepository.FindSeatSeatNumberByScheduleId(scheduleId));
 
         //make a map that groups them by row
         Map<String, List< ShowAvailableSeatsResponse>> map = new TreeMap<>();
@@ -183,33 +182,27 @@ public class    ScheduleService {
         if(schedule.getShowDate().isBefore(LocalDate.now())){
             throw new RuntimeException("Schedule cannot be cancelled.");
         }
-        //find the tickets in the schedule id and make a list
-        List<Tickets> bookedTickets = ticketRepository.findByScheduleScheduleId(scheduleId);
+        //find the tickets in the schedule id, the user and seat come with them in the same query
+        List<Tickets> bookedTickets = ticketRepository.findActiveWithUserAndSeat(scheduleId);
 
+        //the three prices of the schedule in one query
+        Map<SeatCategory, Double> prices = new HashMap<>();
+        for(SeatPrice sp: seatPriceRepository.findByScheduleScheduleId(scheduleId)){
+            prices.put(sp.getSeatCategory(), sp.getPrice());
+        }
 
         //refund the money
-        SeatPrice VIPprice = seatPriceRepository.findBySeatCategoryAndScheduleScheduleId(SeatCategory.VIP, scheduleId)
-                .orElseThrow(() -> new RuntimeException("Seat price not found."));
-        SeatPrice RegPrice = seatPriceRepository.findBySeatCategoryAndScheduleScheduleId(SeatCategory.REGULAR, scheduleId)
-                .orElseThrow(() -> new RuntimeException("Seat price not found."));
-        SeatPrice BalPrice = seatPriceRepository.findBySeatCategoryAndScheduleScheduleId(SeatCategory.BALCONY, scheduleId)
-                .orElseThrow(() -> new RuntimeException("Seat price not found."));
-        //change the status to cancelled
+        Set<Users> refundedUsers = new HashSet<>();
         for(Tickets t: bookedTickets){
+            Double refund = prices.get(t.getSeat().getSeatCategory());
+            if(refund == null){
+                throw new RuntimeException("Seat price not found.");
+            }
             Users user = t.getUser();
-            Double balance = user.getBalance();
-            if(t.getSeat().getSeatCategory().equals(SeatCategory.VIP)){
-                balance = balance + VIPprice.getPrice();
-            }
-            else if(t.getSeat().getSeatCategory().equals(SeatCategory.REGULAR)){
-                balance = balance + RegPrice.getPrice();
-            }
-            else{
-                balance = balance + BalPrice.getPrice();
-            }
-            user.setBalance(balance);
-            userRepository.save(user);
+            user.setBalance(user.getBalance() + refund);
+            refundedUsers.add(user);
         }
+        userRepository.saveAll(refundedUsers);
         //change the status to cancelled
         schedule.setStatus(ScheduleStatus.CANCELLED);
         scheduleRepository.save(schedule);
@@ -234,28 +227,13 @@ public class    ScheduleService {
         return showSchedule; //returns the list of now showing schedules
     }
 
-    public List<SeatPrice> findSeatPricesBySchedule(Integer scheduleId){
-        List<SeatPrice> schedPrices = seatPriceRepository.findByScheduleScheduleId(scheduleId);
-
-        return schedPrices;
+    public List<SeatPriceResponse> findSeatPricesBySchedule(Integer scheduleId){
+        return seatPriceRepository.findPricesByScheduleId(scheduleId);
     }
 
     public List<ShowSeatStatsResponse> showSeatStats(){
-        List<Schedule> activeSchedules = scheduleRepository.ShowActiveSchedules();
-        List<ShowSeatStatsResponse> seatStats = new ArrayList<>();
-
-        for(Schedule s: activeSchedules){
-            List<String> activeSeats = seatService.findOccupiedSeats(s.getScheduleId());
-
-            Integer seatsLength = activeSeats.size();
-            Integer availableSeats = s.getCinema().getTotalSeats() - seatsLength;
-            Double percentage = ((double) seatsLength) / s.getCinema().getTotalSeats() * 100;
-            Double realPercentage = Math.round(percentage * 100.0)/100.0;//typecast
-            seatStats.add(new ShowSeatStatsResponse(s.getMovie().getTitle(), s.getCinema().getCinemaName(),
-                    s.getShowDate(),s.getStatus(),
-                    seatsLength, availableSeats, realPercentage, s.getSlot()));
-        }
-        return seatStats;
+        //one grouped query, the percentage is worked out in the response itself.
+        return scheduleRepository.findSeatStats();
     }
 
     public List<BestShowTimeResponse> showBestShowTime(){

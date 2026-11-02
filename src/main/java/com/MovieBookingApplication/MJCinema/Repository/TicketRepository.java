@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,8 +34,21 @@ public interface TicketRepository extends JpaRepository<Tickets, Integer> {
     )
     List<MovieTicketsDTO> FindTicketsByMovie(Integer movieId);
 
-    @Query("SELECT t.seat.seatNumber FROM Tickets t WHERE t.schedule.scheduleId = :scheduleId")
+    //seats that are taken in a schedule. cancelled tickets free their seat again.
+    @Query("SELECT t.seat.seatNumber FROM Tickets t WHERE t.schedule.scheduleId = :scheduleId " +
+            "AND t.ticketStatus <> com.MovieBookingApplication.MJCinema.Entity.TicketStatus.CANCELLED")
     List<String> FindSeatSeatNumberByScheduleId(Integer scheduleId);
+
+    //which of the requested seats are already taken, in one query.
+    @Query("SELECT t.seat.seatNumber FROM Tickets t WHERE t.schedule.scheduleId = :scheduleId " +
+            "AND t.seat.seatNumber IN :seatNumbers " +
+            "AND t.ticketStatus <> com.MovieBookingApplication.MJCinema.Entity.TicketStatus.CANCELLED")
+    List<String> findTakenSeatNumbers(Integer scheduleId, Collection<String> seatNumbers);
+
+    //tickets of a schedule with their user and seat loaded in the same query.
+    @Query("SELECT t FROM Tickets t JOIN FETCH t.user JOIN FETCH t.seat WHERE t.schedule.scheduleId = :scheduleId " +
+            "AND t.ticketStatus <> com.MovieBookingApplication.MJCinema.Entity.TicketStatus.CANCELLED")
+    List<Tickets> findActiveWithUserAndSeat(Integer scheduleId);
 
 
     @Query("SELECT new com.MovieBookingApplication.MJCinema.DTO.MovieTicketsDTO(" +
