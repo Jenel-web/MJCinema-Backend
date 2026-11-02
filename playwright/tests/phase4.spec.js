@@ -113,13 +113,43 @@ test("one user cannot overspend with two simultaneous bookings", async () => {
   expect(await h.balance(u)).toBe(200);
 });
 
-test("a garbage token is treated as logged out, not as a server error", async () => {
+test("a garbage token is treated as logged out: 401 json, not a 500 and not a redirect", async () => {
   const res = await api.get("/ticket/mytickets?userId=1", {
     headers: { Authorization: "Bearer not.a.token" },
     maxRedirects: 0,
   });
-  expect(res.status()).not.toBe(500);
-  expect([302, 401, 403]).toContain(res.status());
+  expect(res.status()).toBe(401);
+  expect((await res.json()).message).toBe("Please log in to continue.");
+});
+
+test("no token, or the 'Bearer null' the new front end sends when logged out, also gets a 401", async () => {
+  for (const headers of [{}, { Authorization: "Bearer null" }]) {
+    const res = await api.post("/ticket/book", {
+      headers,
+      data: { userId: 1, scheduleId: 1, selectedSeat: ["A1"] },
+      maxRedirects: 0,
+    });
+    expect(res.status()).toBe(401);
+    expect(res.headers()["content-type"]).toContain("application/json");
+  }
+});
+
+test("the 401 carries the CORS headers, otherwise a browser would hide it as a network error", async () => {
+  const origin = "http://127.0.0.1:5500";
+  const res = await api.get("/ticket/mytickets?userId=1", {
+    headers: { Origin: origin, Authorization: "Bearer null" },
+    maxRedirects: 0,
+  });
+  expect(res.status()).toBe(401);
+  expect(res.headers()["access-control-allow-origin"]).toBe(origin);
+});
+
+test("a valid token still works after the change, and public endpoints need no token", async () => {
+  const u = await h.newUser();
+  const mine = await api.get(`/ticket/mytickets?userId=${u.userId}`, h.auth(u));
+  expect(mine.status()).toBe(200);
+  expect((await api.get("/schedule/now-showing", { maxRedirects: 0 })).status()).toBe(200);
+  expect((await api.get("/movie/show", { maxRedirects: 0 })).status()).toBe(200);
 });
 
 test("dashboard.html and bookseat.html are served from the site root", async () => {

@@ -2,6 +2,7 @@ package com.MovieBookingApplication.MJCinema.Config;
 
 
 import com.MovieBookingApplication.MJCinema.Filters.JwtFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,6 +52,13 @@ public class SecurityConfig {
                 .formLogin(form -> form
                 .loginPage("/index.html") // Specifically show this file first
                 .permitAll())
+                //a protected call without a valid token gets a 401 json instead of a redirect to the login page,
+                //so the front end can tell that the session is over (a redirect looked like a normal 200 page).
+                .exceptionHandling(ex -> ex.authenticationEntryPoint((request, response, authException) -> {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json");
+                    response.getWriter().write("{\"message\":\"Please log in to continue.\"}");
+                }))
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session ->
