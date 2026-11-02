@@ -193,7 +193,7 @@ test("UI: log in, pick a showtime, book a seat end to end", async ({ page }) => 
   await page.click(".book-btn-modal");
   const dropdown = page.locator("#showtime-dropdown");
   await expect(dropdown).toBeVisible();
-  // the schedule cancelled earlier in this file/phase 3 must not be offered
+  // the schedule cancelled earlier in this file or in query-refactors.spec.js must not be offered
   const offered = await dropdown.locator("option").evaluateAll((o) => o.map((x) => x.value));
   expect(offered).toContain(String(sid));
   await dropdown.selectOption(String(sid));
