@@ -50,10 +50,7 @@ async function loadMovies(url, type) {
 
     // Force it onto the window object explicitly
     window.allMovies = Array.from(data);
-    console.log(
-      "Data successfully saved to window.allMovies:",
-      window.allMovies
-    ); //saves all the movies here so that ClickedCardHandler can use it later.
+    //saves all the movies here so that ClickedCardHandler can use it later.
     const grid = document.getElementById("movie-grid");
 
     if (!Array.isArray(data)) {
@@ -70,7 +67,7 @@ async function loadMovies(url, type) {
       <div class="movie-card" onclick = "ClickedCardHandler(${
         movie.movieId
       }, '${type}')"> 
-          <img src="${imageBaseUrl + movie.poster}" alt="${movie.title}">
+          <img src="${imageBaseUrl + movie.poster}" alt="${movie.title}" loading="lazy">
           <div class="card-info">
               <h3>${movie.title}</h3>
               ${
