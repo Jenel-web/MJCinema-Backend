@@ -7,6 +7,7 @@ import com.MovieBookingApplication.MJCinema.Repository.*;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
@@ -52,39 +53,28 @@ public class    ScheduleService {
       return scheduleRepository.findById(scheduleId);
 
     }
-    public void updateSched() {
-        List<Schedule> schedules = scheduleRepository.findAll();
-        Set<Movie> schedulesMovies = new HashSet<>();
-        LocalDate now = LocalDate.now();
-        LocalTime timeNow = LocalTime.now();
-        List<Movie> allMovies = movieRepository.findAll();
+    private static final int NOW_SHOWING_DAYS = 5; //a movie is now showing if its next schedule is within this many days
 
-        for (Movie m : allMovies) {
-            Optional<Schedule> nextSchedule = scheduleRepository.findNextSchedule(m, now, timeNow);
-            if (nextSchedule.isPresent()) {
-                //if you used isPresent, always remember to use get before getting the property
-                Long daysBeforeMovie = ChronoUnit.DAYS.between(now, nextSchedule.get().getShowDate());
-                if (daysBeforeMovie <= 5) { //IF 5 days or less
-                    m.setStatus(MovieStatus.NOW_SHOWING); //make it now showing
-                    // add to set
-                }//this already checks all the possible schedule
-               else {
-                   m.setStatus(MovieStatus.COMING_SOON);
-                } // if more than 5, its automatically coming soon
-            }else{
-                    m.setStatus(MovieStatus.INACTIVE);
-                }
-            schedulesMovies.add(m);
-        }
-        movieRepository.saveAll(schedulesMovies);
+    //statuses are refreshed by bulk updates on a timer and after schedule changes, not on every read.
+    @Scheduled(fixedDelay = 60_000, initialDelay = 5_000)
+    public void scheduledRefresh() {
+        refreshStatuses();
+    }
+
+    @Transactional
+    public void refreshStatuses() {
+        LocalDate today = LocalDate.now();
+        LocalTime timeNow = LocalTime.now();
+        LocalDate limit = today.plusDays(NOW_SHOWING_DAYS);
+
+        scheduleRepository.completePastSchedules(today, timeNow);
+        ticketRepository.completePastTickets(today, timeNow);
+        movieRepository.markNowShowing(today, timeNow, limit);
+        movieRepository.markComingSoon(today, timeNow, limit);
+        movieRepository.markInactive(today, timeNow);
     }
 
     public List<MovieDetailsDTO> nowShowing() {
-        updateStatus();
-        updateSched();
-
-
-
         return movieRepository.findByStatus(MovieStatus.NOW_SHOWING).stream()
                 .map(m -> new MovieDetailsDTO(m.getPoster(),
                         m.getTitle(), m.getRating(), m.getOverview(), m.getReleaseDate()
@@ -92,43 +82,7 @@ public class    ScheduleService {
 
 }
     public List<ComingSoonResponse> comingSoon(){
-        updateSched();
-        updateStatus();
-        // now showing list
-        List<Movie> comingSoonMovies = movieRepository.findByStatus(MovieStatus.COMING_SOON);
-        List<ComingSoonResponse> comingSoonResponses = new ArrayList<>();
-        LocalDate now = LocalDate.now();
-        LocalTime timeNow = LocalTime.now();
-        for(Movie m: comingSoonMovies){
-                Optional<Schedule> schedule = scheduleRepository.findNextSchedule(m, now, timeNow);
-
-                if (schedule.isPresent()) {
-
-                    comingSoonResponses.add(new ComingSoonResponse(
-                            m.getPoster(),
-                            m.getTitle(),
-                            m.getRating(),
-                            m.getOverview(),
-                            m.getReleaseDate(),
-                            schedule.get().getShowDate(),
-                            m.getMovieId()
-                    ));
-                }
-            }
-        return comingSoonResponses;
-    }
-
-    public void updateStatus(){
-        LocalDate now = LocalDate.now();
-        LocalTime timeNow = LocalTime.now();
-        List<Schedule> beforeDateNow = scheduleRepository.findDoneSchedules(now, timeNow);
-        Set<Schedule> scheds = new HashSet<>();
-        for(Schedule s: beforeDateNow){
-            s.setStatus(ScheduleStatus.COMPLETED);
-            scheds.add(s);
-        }
-        scheduleRepository.saveAll(scheds);
-
+        return movieRepository.findComingSoon(LocalDate.now(), LocalTime.now());
     }
 
     public Map<String, List<ShowAvailableSeatsResponse>> showAvailableSeats(Integer scheduleId){
@@ -207,9 +161,8 @@ public class    ScheduleService {
         savePrices(SeatCategory.REGULAR, request.getRegPrice(), savedSchedule);
         savePrices(SeatCategory.BALCONY, request.getBalPrice(), savedSchedule);
 
-        //save the movie status.
-            movie.setStatus(MovieStatus.NOW_SHOWING);
-            movieRepository.save(movie);
+        //the movie status (now showing / coming soon) is recomputed from its schedules.
+        refreshStatuses();
             return "Schedule added successfully for " + request.getSlot() + " slot";
     }
 
@@ -260,6 +213,7 @@ public class    ScheduleService {
         //change the status to cancelled
         schedule.setStatus(ScheduleStatus.CANCELLED);
         scheduleRepository.save(schedule);
+        refreshStatuses();
 
         return "Schedule cancelled";
     }

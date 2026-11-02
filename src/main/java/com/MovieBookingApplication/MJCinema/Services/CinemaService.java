@@ -36,8 +36,6 @@ public class CinemaService {
     @Autowired
     private ScheduleService scheduleService;
     public List<ShowMoviePerCinemaResponse> findMoviesPerCinema(Integer cinemaId){
-        scheduleService.updateStatus();
-        scheduleService.updateSched();
         List<Movie> allMovies = movieRepository.findAll();
         LocalTime timeNow = LocalTime.now();
         LocalDate now = LocalDate.now();

@@ -5,9 +5,13 @@ import com.MovieBookingApplication.MJCinema.DTO.ShowBookingsResponse;
 import com.MovieBookingApplication.MJCinema.Entity.TicketStatus;
 import com.MovieBookingApplication.MJCinema.Entity.Tickets;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,6 +62,15 @@ public interface TicketRepository extends JpaRepository<Tickets, Integer> {
     List<MovieTicketsDTO> findTicketByUserUserId(Integer userId);
 
     List<Tickets> findByTicketStatus(TicketStatus ticketStatus);
+
+    //one bulk update instead of loading every active ticket and its schedule.
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Transactional
+    @Query("UPDATE Tickets t SET t.ticketStatus = com.MovieBookingApplication.MJCinema.Entity.TicketStatus.COMPLETED " +
+            "WHERE t.ticketStatus = com.MovieBookingApplication.MJCinema.Entity.TicketStatus.ACTIVE " +
+            "AND t.schedule IN (SELECT s FROM Schedule s WHERE s.showDate < :today " +
+            "OR (s.showDate = :today AND s.endTime < :time))")
+    int completePastTickets(LocalDate today, LocalTime time);
 
 
     List<Tickets> findByUserUsername(String username);

@@ -149,26 +149,11 @@ public class TicketService {
         return cancelTicks;
     }
     public List<MovieTicketsDTO> showMyTickets(Integer userId){
-        updateTicketStatus(); //updates the status first before showing the tickets
+        //ticket statuses are kept up to date by ScheduleService.refreshStatuses()
         List<MovieTicketsDTO> showMytickets = ticketRepository.findTicketByUserUserId(userId);
 
         return showMytickets;
 
-    }
-    public void updateTicketStatus(){
-        List<Tickets> activeTickets = ticketRepository.findByTicketStatus(TicketStatus.ACTIVE);
-        List<Tickets> completedTickets = new ArrayList<>();
-        LocalDate now = LocalDate.now();
-        LocalTime timeNow = LocalTime.now();
-
-        for(Tickets t: activeTickets){
-            if(t.getSchedule().getShowDate().isBefore(now) || (t.getSchedule().getShowDate()).isEqual(now) && t.getSchedule().getEndTime().isBefore(timeNow)){
-                t.setTicketStatus(TicketStatus.COMPLETED);
-                completedTickets.add(t);
-            }
-        }
-
-        ticketRepository.saveAll(completedTickets);
     }
 
     public Double showTotalSales(){

@@ -5,9 +5,11 @@ import com.MovieBookingApplication.MJCinema.Entity.Movie;
 import com.MovieBookingApplication.MJCinema.Entity.MovieStatus;
 import com.MovieBookingApplication.MJCinema.Entity.Schedule;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -38,6 +40,14 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
 
     @Query ("SELECT s FROM Schedule s WHERE s.showDate < :today OR (s.showDate = :today AND s.startTime < :time)")
     List<Schedule> findDoneSchedules(LocalDate today, LocalTime time);
+
+    //one bulk update instead of loading and saving every finished schedule. cancelled ones are left alone.
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Transactional
+    @Query("UPDATE Schedule s SET s.status = com.MovieBookingApplication.MJCinema.Entity.ScheduleStatus.COMPLETED " +
+            "WHERE s.status = com.MovieBookingApplication.MJCinema.Entity.ScheduleStatus.ACTIVE " +
+            "AND (s.showDate < :today OR (s.showDate = :today AND s.startTime < :time))")
+    int completePastSchedules(LocalDate today, LocalTime time);
 
     @Query("SELECT s FROM Schedule s WHERE s.movie.movieId = :movieId AND (s.showDate > :today OR (s.showDate = :today AND s.startTime > :time))")
     List<Schedule> findByMovieId(Integer movieId, LocalDate today, LocalTime time);

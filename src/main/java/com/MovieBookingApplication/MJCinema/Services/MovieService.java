@@ -51,8 +51,6 @@ public class MovieService {
     }
 
     public List<ShowMoviePerCinemaResponse> showMovies(){
-        scheduleService.updateSched();
-        scheduleService.updateStatus();
         return movieRepository.findAllMovies();
     }
 
@@ -61,14 +59,10 @@ public class MovieService {
     }
 
     public ShowTotalAndActiveMovies showActiveCount(){
-        scheduleService.updateSched();
-        scheduleService.updateStatus();
         return movieRepository.getMovieLibraryStats();
     }
 
     public List<ShowMovieInTable> showMovieTable(){
-        //scheduleService.updateSched();
-        scheduleService.updateStatus();
         return movieRepository.showMovieTable();
     }
 }
