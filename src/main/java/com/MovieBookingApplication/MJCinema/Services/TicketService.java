@@ -3,6 +3,10 @@ package com.MovieBookingApplication.MJCinema.Services;
 import com.MovieBookingApplication.MJCinema.DTO.MovieTicketsDTO;
 import com.MovieBookingApplication.MJCinema.DTO.ShowBookingsResponse;
 import com.MovieBookingApplication.MJCinema.DTO.TicketDTO;
+import com.MovieBookingApplication.MJCinema.DTO.WeeklySales;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import com.MovieBookingApplication.MJCinema.Entity.*;
 import com.MovieBookingApplication.MJCinema.Repository.*;
 import jakarta.transaction.Transactional;
@@ -11,15 +15,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.temporal.TemporalAdjusters;
-import java.time.temporal.TemporalField;
-import java.time.temporal.WeekFields;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class TicketService {
@@ -188,10 +187,14 @@ public class TicketService {
     }
 
 
-    public List<ShowBookingsResponse> showBookings(){
-        List<ShowBookingsResponse> allBookings = ticketRepository.showBookings();
-
-        return allBookings;
+    //one page of bookings (newest first) instead of every ticket ever sold
+    public Page<ShowBookingsResponse> showBookings(Pageable pageable){
+        Page<Integer> ids = ticketRepository.findBookingIds(pageable); //step 1: which tickets are on this page
+        if (ids.isEmpty()) {
+            return new PageImpl<>(List.of(), pageable, ids.getTotalElements());
+        }
+        List<ShowBookingsResponse> rows = ticketRepository.showBookingsByIds(ids.getContent()); //step 2: their details
+        return new PageImpl<>(rows, pageable, ids.getTotalElements());
     }
     public String findSeatNumber(String ticketCode){
         String seatNumber = ticketRepository.findSeatNumberByTicketCode(ticketCode);
@@ -203,16 +206,13 @@ public class TicketService {
         return ticketRepository.showRevenueToday();
     }
 
+    //bookings per week, keyed by the Monday of the week, e.g. { "2026-11-02": 33 }.
+    //the grouping is done by the database (one row per week), not by loading every ticket into Java.
     public Map<String, Long> getWeeklySalesTrend() {
-        List<ShowBookingsResponse> allBookings = this.showBookings();
-        TemporalField weekOfYear = WeekFields.of(Locale.getDefault()).weekOfYear();
-
-        return allBookings.stream()
-                .filter(t -> !"CANCELLED".equals(t.getTicketStatus()))
-                .collect(Collectors.groupingBy(
-                        t -> t.getShowDate().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toString(), // Groups as "Week 11", "Week 12", etc.
-                        TreeMap::new,
-                        Collectors.counting()
-                ));
+        Map<String, Long> trend = new LinkedHashMap<>(); //keeps the weeks in the order the database sorted them
+        for (WeeklySales week : ticketRepository.weeklySales()) {
+            trend.put(week.getWeekStart(), week.getBookings());
+        }
+        return trend;
     }
 }

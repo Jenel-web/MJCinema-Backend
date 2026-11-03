@@ -28,7 +28,7 @@
 
 ## Where the project is right now
 
-**Current phase: Phase 4 has started (measuring and indexes are done). Phase 3 and the hardening pass are finished, and "Session and deploy" is being wrapped up.**
+**Current phase: Phase 4, steps 0 to 3 are done (measuring, indexes, the weekly trend in SQL, paginated bookings). Next is step 4, caching. Phase 3 and the hardening pass are finished, and "Session and deploy" is being wrapped up.**
 
 For the last stretch the work has been a **performance and reliability pass**: the app felt slow because almost every request did database writes, ran one query per row and talked to a remote database. The plan has six phases:
 
@@ -39,16 +39,16 @@ For the last stretch the work has been a **performance and reliability pass**: t
 | **3. Remove N+1 queries** | Seat stats are one grouped query. Booking looks up seats, prices and taken seats once for the whole request. Associations are lazy, with DTOs and `JOIN FETCH` where JSON is returned. | ✅ Done |
 | **Hardening** (found while testing phase 3) | Cancelling a schedule now cancels its tickets. No more double refunds. Row locks stop two people booking the same seat, or one wallet being spent twice. Cancelled schedules no longer show up or block their time slot. | ✅ Done |
 | **Session and deploy** | Protected endpoints answer **401 JSON** instead of redirecting to a login page. The React app treats a 401 as "session expired", clears storage and returns to the login screen. Vercel serves the SPA for deep links (refreshing `/dashboard` used to 404). | 🔄 **Current.** Built and tested locally. Next: deploy the backend to Render, then the frontend to Vercel, and check the live site. |
-| **4. Indexes and heavy queries** | Indexes on the columns the queries filter by, pagination for `GET /ticket/showBookings`, the weekly sales trend computed in SQL, short-lived caching for dashboard totals. Measure before and after. | 🔄 **Started.** Done: measuring and the five indexes (see [measurements](docs/performance-measurements.md)). Next: weekly trend in SQL, pagination, caching. |
+| **4. Indexes and heavy queries** | Indexes on the columns the queries filter by, pagination for `GET /ticket/showBookings`, the weekly sales trend computed in SQL, short-lived caching for dashboard totals. Measure before and after. | 🔄 **In progress.** Done: measuring, the five indexes, the weekly trend in SQL and the paginated bookings list (see [measurements](docs/performance-measurements.md)). Next: caching the dashboard totals, then a final measurement. |
 | **5. Remove network latency** | A local MySQL for development; run the app in the same region as the production database. | ⏭ Planned |
 | **6. Frontend polish** | Cache the movie lists for a session, loading skeletons everywhere. | ⏭ Planned |
 
 **What we are doing at this moment**
-- Phase 4, step by step: a timing filter and query counter are in (`TimingFilter`), the indexes are added and measured. The weekly sales trend in SQL, pagination of `showBookings` and caching of the dashboard totals come next.
+- Phase 4, step by step: a timing filter and query counter are in (`TimingFilter`), the indexes, the weekly sales trend in SQL and the paginated `showBookings` are done and measured. Caching of the dashboard totals comes next.
 - Verifying the session-expiry flow end to end (backend 401 + frontend redirect) and getting it deployed.
 - Keeping this README and the test suite in step with the code.
 
-**What the measurements say so far.** On a generated data set of 280,000 tickets (local database, so no network delay), the five indexes made the once-a-minute status refresh about **4x faster** (about 385 ms to about 99 ms), the admin analytics endpoints take **15 to 27% less time**, and one query that sorted every ticket (newest bookings) went from **75 ms to under 0.1 ms**. Everyday endpoints such as the seat map, booking and movie showtimes did not change, because they were already fast. The indexes cost about 20% slower bulk inserts and 11.5 MB of disk at this size. The full numbers, the method and the limits are in [docs/performance-measurements.md](docs/performance-measurements.md). The biggest remaining cost is the heavy analytics endpoints, which an index cannot fix; those need the weekly-trend change and caching.
+**What the measurements say so far.** On a generated data set of 280,000 tickets (local database, so no network delay), the five indexes made the once-a-minute status refresh about **4x faster** (about 385 ms to about 99 ms), the admin analytics endpoints take **15 to 27% less time**, and one query that sorted every ticket (newest bookings) went from **75 ms to under 0.1 ms**. Everyday endpoints such as the seat map, booking and movie showtimes did not change, because they were already fast. The indexes cost about 20% slower bulk inserts and 11.5 MB of disk at this size. The full numbers, the method and the limits are in [docs/performance-measurements.md](docs/performance-measurements.md). The weekly sales trend then went from **1.73 s to 0.21 s** (grouped by the database instead of loading 280,000 tickets into Java), and the bookings list from **1.93 s and 45 MB to 39 ms and 3 KB** (one page of 20 at a time). With the production memory limit of 300 MB, the old versions of those two calls needed about 200 MB at this data size and returned HTTP 500 (`OutOfMemoryError`) when given 180 MB or less; the new ones work at 140 MB. The trend change also fixed a bug: cancelled tickets were being counted in the weekly chart. The biggest remaining cost is the admin analytics endpoints (0.9 to 2.1 s), which add up 255,000 tickets on every call; an index cannot fix that, caching can.
 
 ---
 
@@ -182,7 +182,7 @@ The backend still ships the original vanilla-JS pages under `src/main/resources/
 | `/cinema/all`, `/cinema/movies/{id}` | Public | Cinemas and their movies |
 | `/seat/occupied/{id}` | Public | Taken seats for a schedule |
 | `POST /ticket/book`, `PATCH /ticket/cancel`, `GET /ticket/mytickets` | Authenticated | Booking flow |
-| `/ticket/totalSales`, `/showBookings`, `/showRevenueToday`, `/getSalesTrend` | **Admin** | Sales reporting |
+| `/ticket/totalSales`, `/showBookings`, `/showRevenueToday`, `/getSalesTrend` | **Admin** | Sales reporting. `showBookings` is paginated: `?page=0&size=20` (default 20, maximum 100), newest first, total in the `X-Total-Count` header. |
 
 Protected endpoints without a valid `Authorization: Bearer <token>` header return `401` with a JSON body. CORS allows `http://127.0.0.1:5500`, `http://localhost:5500`, `https://mjcinemaapp.vercel.app` and `https://mj-cinema-frontend.vercel.app` (see `SecurityConfig`).
 
@@ -254,8 +254,9 @@ You need the backend running on `localhost:8080` against an empty test database 
 |---|---|
 | `01-query-refactors.spec.js` | The phase 2 and 3 changes keep behaving: status refresh, JSON shapes, seat map, multi-seat booking and its failure cases, seat stats, schedule refunds. |
 | `02-fixes-and-sessions.spec.js` | The hardening pass and the session work: cancelling schedules and tickets (also twice, also at the same moment), six users racing for one seat, one wallet spent twice, 401 JSON with CORS headers, and UI tests for login, booking a seat end to end and the "Session Expired" path. |
+| `03-trend-and-pagination.spec.js` | The weekly trend (counts per Monday, cancelled tickets left out) and the paginated bookings list (newest first, every booking exactly once across pages, page size default and cap, admin only, the total header readable from a browser). |
 
-The two files share one database and run in file-name order. 26 tests in total. The frontend repository has its own suite (`npm run e2e` in `web/`), including `session-expired.spec.ts` for the 401 handling.
+The files share one database and run in file-name order. 34 tests in total. The frontend repository has its own suite (`npm run e2e` in `web/`), including `session-expired.spec.ts` for the 401 handling.
 
 **Regenerating the README screenshots**
 

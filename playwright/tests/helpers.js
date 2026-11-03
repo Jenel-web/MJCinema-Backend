@@ -44,11 +44,19 @@ function createHelpers(api) {
       data: { movieId, cinemaId: 1, showDate: day, slot, ...prices },
     });
     expect(res.ok(), await res.text()).toBeTruthy();
-    // movieSchedules lists the active schedules of the movie, so find the new one by date and slot
+    // movieSchedules lists the active schedules of the movie, but only the next 5 days, so find the new one by date and slot
     const list = await (await api.get(`/schedule/movieSchedules/${movieId}`)).json();
     const found = list.find((s) => s.showDate === day && s.slot === slot);
-    expect(found, "new schedule should be listed").toBeTruthy();
-    return found.scheduleId;
+    if (found) return found.scheduleId;
+
+    // further away than that: walk the schedule ids (they are numbered one after the other) until it turns up
+    for (let id = 1; id < 2000; id++) {
+      const res = await api.get(`/schedule/${id}`);
+      if (res.status() === 404) break;
+      const s = await res.json();
+      if (s.movie.movieId === movieId && s.showDate === day && s.slot === slot && s.status === "ACTIVE") return s.scheduleId;
+    }
+    expect(found, "new schedule should be found").toBeTruthy();
   }
 
   const book = (u, scheduleId, seats) =>

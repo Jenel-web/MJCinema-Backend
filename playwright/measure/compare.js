@@ -16,8 +16,12 @@ console.log("| Endpoint | Before (median) | After (median) | Change | SQL statem
 console.log("|---|---|---|---|---|");
 for (const [name, b] of Object.entries(before.endpoints)) {
   const a = after.endpoints[name];
+  if (!a) continue;
   const q = b.queries === a.queries ? `${b.queries}` : `${b.queries} -> ${a.queries}`;
   console.log(`| ${name} | ${fmt(b.medianMs)} | ${fmt(a.medianMs)} | ${change(b.medianMs, a.medianMs)} | ${q} |`);
+}
+for (const [name, a] of Object.entries(after.endpoints)) {
+  if (!before.endpoints[name]) console.log(`| ${name} | (not measured) | ${fmt(a.medianMs)} | new | ${a.queries} |`);
 }
 const avg = (a) => (a.length ? Math.round(a.reduce((x, y) => x + y, 0) / a.length) : null);
 console.log(`\nScheduled status refresh: before ${before.refreshMs.join(", ")} ms (avg ${avg(before.refreshMs)}), after ${after.refreshMs.join(", ")} ms (avg ${avg(after.refreshMs)})`);

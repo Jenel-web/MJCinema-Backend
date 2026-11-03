@@ -4,6 +4,8 @@ import com.MovieBookingApplication.MJCinema.DTO.*;
 import com.MovieBookingApplication.MJCinema.Services.TicketService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -85,12 +87,24 @@ public class TicketsController {
 
         return ResponseEntity.ok(totalSales);
     }
+    //bookings are returned one page at a time: GET /ticket/showBookings?page=0&size=20
+    //the body is still a plain array; the total number of bookings is in the X-Total-Count header.
+    private static final int DEFAULT_PAGE_SIZE = 20;
+    private static final int MAX_PAGE_SIZE = 100; //nobody can ask for "a million rows at once"
+
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/showBookings")
-    public ResponseEntity<List<ShowBookingsResponse>> showBookings(){
-        List<ShowBookingsResponse> allBookingsActive = ticketService.showBookings();
+    public ResponseEntity<List<ShowBookingsResponse>> showBookings(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "" + DEFAULT_PAGE_SIZE) int size){
+        int safePage = Math.max(page, 0);
+        int safeSize = Math.min(Math.max(size, 1), MAX_PAGE_SIZE);
 
-        return ResponseEntity.ok(allBookingsActive);
+        Page<ShowBookingsResponse> bookings = ticketService.showBookings(PageRequest.of(safePage, safeSize));
+
+        return ResponseEntity.ok()
+                .header("X-Total-Count", String.valueOf(bookings.getTotalElements()))
+                .body(bookings.getContent());
     }
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/showTotalBookings")

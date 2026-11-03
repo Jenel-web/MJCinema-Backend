@@ -69,7 +69,9 @@ const percentile = (a, p) => [...a].sort((x, y) => x - y)[Math.min(a.length - 1,
     { name: "Revenue today (admin)", ...get("/ticket/showRevenueToday", admin) },
     { name: "Users table (admin)", ...get("/user/showUsers", admin) },
     { name: "Weekly sales trend (admin)", ...get("/ticket/getSalesTrend", admin) },
-    { name: "All bookings (admin)", ...get("/ticket/showBookings", admin) },
+    { name: "All bookings (admin)", ...get("/ticket/showBookings", admin) }, //after the pagination change: the first page of 20
+    { name: "Bookings, page 100 (offset 2,000)", ...get("/ticket/showBookings?page=100&size=20", admin) },
+    { name: "Bookings, deepest page (offset 279,980)", ...get("/ticket/showBookings?page=13999&size=20", admin) },
   ];
 
   const results = {};

@@ -2,6 +2,9 @@ package com.MovieBookingApplication.MJCinema.Repository;
 
 import com.MovieBookingApplication.MJCinema.DTO.MovieTicketsDTO;
 import com.MovieBookingApplication.MJCinema.DTO.ShowBookingsResponse;
+import com.MovieBookingApplication.MJCinema.DTO.WeeklySales;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import com.MovieBookingApplication.MJCinema.Entity.TicketStatus;
 import com.MovieBookingApplication.MJCinema.Entity.Tickets;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -96,15 +99,39 @@ public interface TicketRepository extends JpaRepository<Tickets, Integer> {
             "WHERE t.ticketStatus != com.MovieBookingApplication.MJCinema.Entity.TicketStatus.CANCELLED")
     Double showTotalSales(); //takes the sum of all tickets.
 
+    //bookings are read in two steps, newest first:
+    //1. findBookingIds picks the ids of one page. Only ids are selected, so MySQL answers it from the booked_time
+    //   index alone and never has to join or sort the whole table (a single query with all the joins made MySQL
+    //   switch to reading and sorting every ticket as soon as the page number grew: 180 ms at page 100).
+    //2. showBookingsByIds loads the details of just those few tickets.
+    //ticketId is the tie-breaker: without it two tickets booked in the same instant could swap places between two
+    //requests, so a booking could show up twice or never across pages. Spring adds the total-count query itself.
+    @Query("SELECT t.ticketId FROM Tickets t ORDER BY t.bookedTime DESC, t.ticketId DESC")
+    Page<Integer> findBookingIds(Pageable pageable);
+
+    //same sort as findBookingIds, so the rows come back in the order of the page
     @Query("SELECT new com.MovieBookingApplication.MJCinema.DTO.ShowBookingsResponse(" +
-            "t.ticketCode, t.user.username, t.seat.seatNumber, t.schedule.showDate, t.schedule.cinema.cinemaName," +
-            "t.schedule.startTime, t.ticketStatus) " +
-            "FROM Tickets t "+
+            "t.ticketCode, t.user.username, t.seat.seatNumber, s.showDate, c.cinemaName, " +
+            "s.startTime, t.ticketStatus) " +
+            "FROM Tickets t " +
             "JOIN t.schedule s " +
             "JOIN s.cinema c " +
-            "ORDER by t.bookedTime DESC"//the colon is like a substitute
-    )
-    List<ShowBookingsResponse> showBookings();
+            "WHERE t.ticketId IN :ids " +
+            "ORDER BY t.bookedTime DESC, t.ticketId DESC")
+    List<ShowBookingsResponse> showBookingsByIds(List<Integer> ids);
+
+    //tickets booked per week (the week starts on Monday and is taken from the showtime date), cancelled ones left out.
+    //the database does the grouping and counting, so only one row per week comes back to Java.
+    //WEEKDAY() is 0 for Monday ... 6 for Sunday, so subtracting it from the date gives that week's Monday.
+    @Query(value = "SELECT DATE_FORMAT(DATE_SUB(s.show_date, INTERVAL WEEKDAY(s.show_date) DAY), '%Y-%m-%d') AS weekStart, " +
+            "COUNT(*) AS bookings " +
+            "FROM tickets t " +
+            "JOIN schedule s ON s.schedule_id = t.schedule_id " +
+            "WHERE t.ticket_status <> 'CANCELLED' " +
+            "GROUP BY weekStart " +
+            "ORDER BY weekStart",
+            nativeQuery = true)
+    List<WeeklySales> weeklySales();
 
     @Query("SELECT t.seat.seatNumber " +
             "FROM Tickets t "+
