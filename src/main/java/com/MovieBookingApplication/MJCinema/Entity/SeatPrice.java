@@ -3,6 +3,10 @@ package com.MovieBookingApplication.MJCinema.Entity;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "seat_price", indexes = {
+        //the price of one seat category in one showtime (booking, cancelling, revenue reports)
+        @Index(name = "idx_seatprice_schedule_category", columnList = "schedule_id, seat_category")
+})
 public class SeatPrice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

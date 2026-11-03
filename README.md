@@ -28,7 +28,7 @@
 
 ## Where the project is right now
 
-**Current phase: Phase 3 is finished, the hardening pass is finished, and we are finishing "Session and deploy".**
+**Current phase: Phase 4 has started (measuring and indexes are done). Phase 3 and the hardening pass are finished, and "Session and deploy" is being wrapped up.**
 
 For the last stretch the work has been a **performance and reliability pass**: the app felt slow because almost every request did database writes, ran one query per row and talked to a remote database. The plan has six phases:
 
@@ -39,15 +39,16 @@ For the last stretch the work has been a **performance and reliability pass**: t
 | **3. Remove N+1 queries** | Seat stats are one grouped query. Booking looks up seats, prices and taken seats once for the whole request. Associations are lazy, with DTOs and `JOIN FETCH` where JSON is returned. | ✅ Done |
 | **Hardening** (found while testing phase 3) | Cancelling a schedule now cancels its tickets. No more double refunds. Row locks stop two people booking the same seat, or one wallet being spent twice. Cancelled schedules no longer show up or block their time slot. | ✅ Done |
 | **Session and deploy** | Protected endpoints answer **401 JSON** instead of redirecting to a login page. The React app treats a 401 as "session expired", clears storage and returns to the login screen. Vercel serves the SPA for deep links (refreshing `/dashboard` used to 404). | 🔄 **Current.** Built and tested locally. Next: deploy the backend to Render, then the frontend to Vercel, and check the live site. |
-| **4. Indexes and heavy queries** | Indexes on the columns the queries filter by, pagination for `GET /ticket/showBookings`, the weekly sales trend computed in SQL, short-lived caching for dashboard totals. Measure before and after. | ⏭ Next |
+| **4. Indexes and heavy queries** | Indexes on the columns the queries filter by, pagination for `GET /ticket/showBookings`, the weekly sales trend computed in SQL, short-lived caching for dashboard totals. Measure before and after. | 🔄 **Started.** Done: measuring and the five indexes (see [measurements](docs/performance-measurements.md)). Next: weekly trend in SQL, pagination, caching. |
 | **5. Remove network latency** | A local MySQL for development; run the app in the same region as the production database. | ⏭ Planned |
 | **6. Frontend polish** | Cache the movie lists for a session, loading skeletons everywhere. | ⏭ Planned |
 
 **What we are doing at this moment**
+- Phase 4, step by step: a timing filter and query counter are in (`TimingFilter`), the indexes are added and measured. The weekly sales trend in SQL, pagination of `showBookings` and caching of the dashboard totals come next.
 - Verifying the session-expiry flow end to end (backend 401 + frontend redirect) and getting it deployed.
 - Keeping this README and the test suite in step with the code.
 
-**Not measured yet.** The changes remove a lot of work per request (see the table above), but there are no before/after timings yet. Phase 4 starts by recording them.
+**What the measurements say so far.** On a generated data set of 280,000 tickets (local database, so no network delay), the five indexes made the once-a-minute status refresh about **4x faster** (about 385 ms to about 99 ms), the admin analytics endpoints take **15 to 27% less time**, and one query that sorted every ticket (newest bookings) went from **75 ms to under 0.1 ms**. Everyday endpoints such as the seat map, booking and movie showtimes did not change, because they were already fast. The indexes cost about 20% slower bulk inserts and 11.5 MB of disk at this size. The full numbers, the method and the limits are in [docs/performance-measurements.md](docs/performance-measurements.md). The biggest remaining cost is the heavy analytics endpoints, which an index cannot fix; those need the weekly-trend change and caching.
 
 ---
 
@@ -278,7 +279,7 @@ src/main/java/com/MovieBookingApplication/MJCinema/
 └── Services/      Business logic, JWT, TMDB client, exception handler
 
 src/main/resources/static/   The original vanilla-JS frontend (legacy fallback)
-playwright/                  End-to-end tests, test-database seed, README screenshot script
+playwright/                  End-to-end tests, test-database seed, README screenshot script, performance measuring scripts (measure/)
 docs/                        Logo and README screenshots
 ```
 

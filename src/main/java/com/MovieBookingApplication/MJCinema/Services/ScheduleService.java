@@ -53,12 +53,16 @@ public class    ScheduleService {
       return scheduleRepository.findByIdWithDetails(scheduleId);
 
     }
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ScheduleService.class);
+
     private static final int NOW_SHOWING_DAYS = 5; //a movie is now showing if its next schedule is within this many days
 
     //statuses are refreshed by bulk updates on a timer and after schedule changes, not on every read.
     @Scheduled(fixedDelay = 60_000, initialDelay = 5_000)
     public void scheduledRefresh() {
+        long start = System.nanoTime();
         refreshStatuses();
+        log.info("scheduled status refresh took {} ms", (System.nanoTime() - start) / 1_000_000);
     }
 
     @Transactional

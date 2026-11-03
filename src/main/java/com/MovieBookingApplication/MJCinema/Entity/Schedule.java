@@ -7,6 +7,12 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
+@Table(name = "schedule", indexes = {
+        //the upcoming showtimes of one movie (movie details, the status refresh)
+        @Index(name = "idx_schedule_movie_date", columnList = "movie_id, show_date"),
+        //"is this cinema + day + slot already taken?" when an admin adds a schedule
+        @Index(name = "idx_schedule_cinema_date_slot", columnList = "cinema_id, show_date, slot")
+})
 public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -5,7 +5,13 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "tickets")
+@Table(name = "tickets", indexes = {
+        //"tickets of this showtime that are not cancelled": the booking check, the seat map and the seat stats.
+        //schedule_id goes first because every one of those queries filters by it; ticket_status refines it.
+        @Index(name = "idx_tickets_schedule_status", columnList = "schedule_id, ticket_status"),
+        //the newest bookings first (the admin bookings list); without it MySQL sorts every ticket to find the latest 20.
+        @Index(name = "idx_tickets_booked_time", columnList = "booked_time")
+})
 public class Tickets {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
